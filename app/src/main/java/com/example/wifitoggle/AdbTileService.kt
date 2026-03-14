@@ -7,6 +7,7 @@ import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.annotation.SuppressLint
 
 class AdbTileService : TileService() {
 
@@ -24,8 +25,7 @@ class AdbTileService : TileService() {
                 if (android.os.Build.VERSION.SDK_INT >= 34) {
                     startActivityAndCollapse34(intent)
                 } else {
-                    @Suppress("DEPRECATION")
-                    startActivityAndCollapse(intent)
+                    startActivityAndCollapseLegacy(intent)
                 }
             }
             return
@@ -56,5 +56,11 @@ class AdbTileService : TileService() {
             PendingIntent.FLAG_IMMUTABLE
         )
         startActivityAndCollapse(pendingIntent)
+    }
+
+    @SuppressLint("StartActivityAndCollapseDeprecated")
+    private fun startActivityAndCollapseLegacy(intent: Intent) {
+        @Suppress("DEPRECATION")
+        startActivityAndCollapse(intent)
     }
 }
