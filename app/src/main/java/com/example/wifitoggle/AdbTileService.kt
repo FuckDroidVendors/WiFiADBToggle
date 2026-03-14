@@ -6,8 +6,8 @@ import android.graphics.drawable.Icon
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import android.widget.Toast
+import android.annotation.SuppressLint
 import androidx.annotation.RequiresApi
-import androidx.annotation.SuppressLint
 
 class AdbTileService : TileService() {
 
