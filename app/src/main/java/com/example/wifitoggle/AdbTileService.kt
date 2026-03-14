@@ -1,5 +1,6 @@
 package com.example.wifitoggle
 
+import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.content.Intent
 import android.graphics.drawable.Icon
@@ -20,13 +21,20 @@ class AdbTileService : TileService() {
             Toast.makeText(this, "Open app to grant Shizuku or root", Toast.LENGTH_SHORT).show()
             val intent = packageManager.getLaunchIntentForPackage(packageName)
             if (intent != null) {
-                val pendingIntent = PendingIntent.getActivity(
-                    this,
-                    0,
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
-                    PendingIntent.FLAG_IMMUTABLE
-                )
-                startActivityAndCollapse(pendingIntent)
+                if (android.os.Build.VERSION.SDK_INT >= 34) {
+                    @SuppressLint("NewApi")
+                    val pendingIntent = PendingIntent.getActivity(
+                        this,
+                        0,
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+                        PendingIntent.FLAG_IMMUTABLE
+                    )
+                    @SuppressLint("NewApi")
+                    startActivityAndCollapse(pendingIntent)
+                } else {
+                    @Suppress("DEPRECATION")
+                    startActivityAndCollapse(intent)
+                }
             }
             return
         }
