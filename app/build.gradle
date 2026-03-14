@@ -7,6 +7,11 @@ android {
     namespace 'com.example.wifitoggle'
     compileSdk 34
 
+    signingConfigs {
+        debug {
+        }
+    }
+
     defaultConfig {
         applicationId "com.example.wifitoggle"
         minSdk 24
@@ -16,8 +21,12 @@ android {
     }
 
     buildTypes {
+        debug {
+            signingConfig signingConfigs.debug
+        }
         release {
             minifyEnabled false
+            signingConfig signingConfigs.debug
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -28,6 +37,26 @@ android {
     }
     kotlinOptions {
         jvmTarget = '17'
+    }
+}
+
+androidComponents {
+    onVariants(selector().all()) { variant ->
+        def variantName = variant.name
+        def capitalized = variantName.capitalize()
+        def printTask = tasks.register("print${capitalized}ApkPath") {
+            dependsOn("assemble${capitalized}")
+            doLast {
+                def apkDir = file("$buildDir/outputs/apk/$variantName")
+                def apks = apkDir.exists() ? apkDir.listFiles().findAll { it.name.endsWith(".apk") } : []
+                if (apks && !apks.isEmpty()) {
+                    apks.each { println("APK[${variantName}]: ${it.absolutePath}") }
+                } else {
+                    println("APK[${variantName}]: not found (expected in ${apkDir})")
+                }
+            }
+        }
+        tasks.named("build").configure { finalizedBy(printTask) }
     }
 }
 
