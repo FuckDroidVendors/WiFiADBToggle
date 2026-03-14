@@ -1,12 +1,16 @@
 package com.example.wifitoggle
 
-import android.content.Context
 import android.app.Activity
+import android.content.ComponentName
+import android.content.Context
+import android.content.ServiceConnection
+import android.os.Bundle
+import android.os.IBinder
 import android.widget.Toast
 import rikka.shizuku.Shizuku
-import rikka.shizuku.ShizukuRemoteProcess
 import java.io.BufferedReader
-import java.io.InputStreamReader
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 
 object ShellRunner {
     data class Result(val success: Boolean, val output: String)
@@ -32,7 +36,7 @@ object ShellRunner {
             return runCommandWithSu(command)
         }
         if (canUseShizuku()) {
-            return runCommandWithShizuku(command)
+            return runCommandWithShizuku(context, command)
         }
         Toast.makeText(context, "No root or Shizuku permission", Toast.LENGTH_SHORT).show()
         return Result(false, "No root or Shizuku")
@@ -51,11 +55,57 @@ object ShellRunner {
         }
     }
 
-    private fun runCommandWithShizuku(command: String): Result {
+    private var shizukuService: IPrivilegedService? = null
+    @Volatile
+    private var bindLatch: CountDownLatch? = null
+    @Volatile
+    private var binderDeadListenerAdded = false
+    private val serviceConnection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            shizukuService = IPrivilegedService.Stub.asInterface(service)
+            bindLatch?.countDown()
+        }
+
+        override fun onServiceDisconnected(name: ComponentName?) {
+            shizukuService = null
+        }
+    }
+
+    private fun ensureShizukuService(context: Context): IPrivilegedService? {
+        if (!canUseShizuku()) return null
+        shizukuService?.let { return it }
+
+        val latch = CountDownLatch(1)
+        bindLatch = latch
+        val args = Shizuku.UserServiceArgs(
+            ComponentName(context, PrivilegedService::class.java)
+        )
+            .daemon(false)
+            .tag("privileged_shell")
+            .version(1)
+
+        Shizuku.bindUserService(args, serviceConnection)
+
+        if (!binderDeadListenerAdded) {
+            Shizuku.addBinderDeadListener {
+                shizukuService = null
+            }
+            binderDeadListenerAdded = true
+        }
+
+        // Wait briefly for the service connection
+        latch.await(500, TimeUnit.MILLISECONDS)
+        bindLatch = null
+        return shizukuService
+    }
+
+    private fun runCommandWithShizuku(context: Context, command: String): Result {
         return try {
-            val process: ShizukuRemoteProcess = Shizuku.newProcess(arrayOf("sh", "-c", command), null, null)
-            val output = process.inputStream.bufferedReader().use(BufferedReader::readText)
-            val exit = process.waitFor()
+            val service = ensureShizukuService(context)
+                ?: return Result(false, "Shizuku service not available")
+            val bundle: Bundle = service.runCommand(command)
+            val exit = bundle.getInt("exitCode", 1)
+            val output = bundle.getString("output", "") ?: ""
             Result(exit == 0, output.trim())
         } catch (e: Exception) {
             Result(false, e.message ?: "shizuku failed")

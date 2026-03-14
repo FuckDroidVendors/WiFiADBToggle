@@ -14,6 +14,7 @@ The toggle runs:
 - Disable: `setprop service.adb.tcp.port -1; stop adbd; start adbd`
 
 This requires root or Shizuku because it restarts `adbd` and changes system properties.
+Shizuku execution uses a UserService (AIDL binder) instead of the deprecated `newProcess` API.
 
 ## Build
 1. Open the project in Android Studio.
@@ -34,6 +35,8 @@ You can also run `scripts/gen-wrapper.sh` to generate the wrapper JAR if Gradle 
 - If the tile says `no IP`, connect to Wi-Fi or check network availability.
 - Root path uses `su -c` and works with Magisk or other superuser managers.
 - Shizuku must be running; the app only requests permission and does not start it.
+- Shizuku requires a `ShizukuProvider` entry in the manifest; this project includes it.
+- The UserService class implements an AIDL `Stub`, and can optionally have a `Context` constructor for Shizuku v13+; this project includes both.
 
 ## Files
 - Tile service: `app/src/main/java/com/example/wifitoggle/AdbTileService.kt`
