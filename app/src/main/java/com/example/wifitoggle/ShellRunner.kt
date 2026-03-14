@@ -1,8 +1,7 @@
 package com.example.wifitoggle
 
-import android.app.Activity
 import android.content.Context
-import android.os.Build
+import android.app.Activity
 import android.widget.Toast
 import rikka.shizuku.Shizuku
 import rikka.shizuku.ShizukuRemoteProcess
@@ -10,8 +9,6 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 
 object ShellRunner {
-    private const val SHIZUKU_PERMISSION = "moe.shizuku.manager.permission.API_V23"
-
     data class Result(val success: Boolean, val output: String)
 
     fun canUseRoot(): Boolean {

@@ -4,10 +4,13 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import rikka.shizuku.Shizuku
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var statusText: TextView
+    private val permissionListener =
+        Shizuku.OnRequestPermissionResultListener { _, _ -> updateStatus() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,6 +31,16 @@ class MainActivity : AppCompatActivity() {
         }
 
         updateStatus()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        Shizuku.addRequestPermissionResultListener(permissionListener)
+    }
+
+    override fun onStop() {
+        Shizuku.removeRequestPermissionResultListener(permissionListener)
+        super.onStop()
     }
 
     private fun updateStatus() {
