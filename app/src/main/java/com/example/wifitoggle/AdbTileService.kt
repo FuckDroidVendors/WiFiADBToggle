@@ -1,12 +1,12 @@
 package com.example.wifitoggle
 
-import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.content.Intent
 import android.graphics.drawable.Icon
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 
 class AdbTileService : TileService() {
 
@@ -22,15 +22,7 @@ class AdbTileService : TileService() {
             val intent = packageManager.getLaunchIntentForPackage(packageName)
             if (intent != null) {
                 if (android.os.Build.VERSION.SDK_INT >= 34) {
-                    @SuppressLint("NewApi")
-                    val pendingIntent = PendingIntent.getActivity(
-                        this,
-                        0,
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
-                        PendingIntent.FLAG_IMMUTABLE
-                    )
-                    @SuppressLint("NewApi")
-                    startActivityAndCollapse(pendingIntent)
+                    startActivityAndCollapse34(intent)
                 } else {
                     @Suppress("DEPRECATION")
                     startActivityAndCollapse(intent)
@@ -53,5 +45,16 @@ class AdbTileService : TileService() {
             tile.subtitle = if (ip != null) "$ip:5555" else "no IP"
         }
         tile.updateTile()
+    }
+
+    @RequiresApi(34)
+    private fun startActivityAndCollapse34(intent: Intent) {
+        val pendingIntent = PendingIntent.getActivity(
+            this,
+            0,
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+            PendingIntent.FLAG_IMMUTABLE
+        )
+        startActivityAndCollapse(pendingIntent)
     }
 }
