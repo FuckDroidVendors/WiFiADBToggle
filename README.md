@@ -20,6 +20,8 @@ This requires root or Shizuku because it restarts `adbd` and changes system prop
 2. Sync Gradle.
 3. Run on a device.
 
+Gradle wrapper scripts are included, but the `gradle/wrapper/gradle-wrapper.jar` file is not generated in this environment. On your machine, run `gradle wrapper` once to generate it, or let Android Studio create/update the wrapper.
+
 ## Use
 1. Launch the app once.
 2. If using Shizuku, tap `Request Shizuku Permission`.
