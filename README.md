@@ -27,7 +27,7 @@ You can also run `scripts/gen-wrapper.sh` to generate the wrapper JAR if Gradle 
 3. Tap the tile/notification to toggle wireless ADB.
 
 ## Notes
-- The tile subtitle shows `IP:5555` when it can detect a non-loopback IPv4 address.
+- The tile subtitle shows `IP:5555` (IPv4) or `[IPv6]:5555` when it can detect a non-loopback address.
 - If the tile says `no IP`, connect to Wi-Fi or check network availability.
 - Root path uses `su -c` and works with Magisk or other superuser managers.
 

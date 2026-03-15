@@ -105,7 +105,7 @@ class MainActivity : AppCompatActivity() {
     private fun updateStatus() {
         val root = ShellRunner.canUseRoot()
         val enabled = AdbWifiController.isEnabled(this)
-        val ip = NetworkUtils.getActiveIpv4(this)
+        val ip = NetworkUtils.getActiveIp(this)
         val yes = getString(R.string.value_yes)
         val no = getString(R.string.value_no)
         val on = getString(R.string.value_on)
@@ -114,7 +114,11 @@ class MainActivity : AppCompatActivity() {
             getString(R.string.status_root, if (root) yes else no),
             getString(R.string.status_wifi_adb, if (enabled) on else off)
         )
-        val ipText = if (ip != null) getString(R.string.ip_with_port, ip) else getString(R.string.value_no_ip)
+        val ipText = if (ip != null) {
+            getString(R.string.ip_with_port, NetworkUtils.formatHostForPort(ip))
+        } else {
+            getString(R.string.value_no_ip)
+        }
         lines.add(getString(R.string.status_ip, ipText))
         statusText.text = lines.joinToString("\n")
     }

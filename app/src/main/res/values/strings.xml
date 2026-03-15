@@ -65,6 +65,7 @@
     <string name="action_settings">Settings</string>
     <string name="action_turn_on">TURN ON</string>
     <string name="action_turn_off">TURN OFF</string>
+    <string name="action_open">OPEN</string>
     <string name="schedule_label">Schedule</string>
     <string name="setting_schedule_enabled">Enable schedule</string>
     <string name="schedule_add">Add schedule</string>

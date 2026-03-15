@@ -28,9 +28,9 @@ object NotificationHelper {
 
     fun buildStatusNotification(context: Context): Notification {
         val adbEnabled = AdbWifiController.isEnabled(context)
-        val ip = NetworkUtils.getActiveIpv4(context)
+        val ip = NetworkUtils.getActiveIp(context)
         val stateLabel = if (adbEnabled) context.getString(R.string.value_on) else context.getString(R.string.value_off)
-        val ipText = ip?.let { context.getString(R.string.ip_with_port, it) }
+        val ipText = ip?.let { context.getString(R.string.ip_with_port, NetworkUtils.formatHostForPort(it)) }
             ?: context.getString(R.string.tile_subtitle_no_ip)
         return buildStatusNotification(context, adbEnabled, ipText, stateLabel)
     }
@@ -47,16 +47,16 @@ object NotificationHelper {
         } else {
             context.getString(R.string.action_turn_on)
         }
-        val actionIntent = Intent(context, ShortcutActivity::class.java).setAction(
+        val toggleIntent = Intent(context, ShortcutActivity::class.java).setAction(
             if (adbEnabled) ShortcutActivity.ACTION_DISABLE else ShortcutActivity.ACTION_ENABLE
         )
-        val actionPending = PendingIntent.getActivity(
+        val togglePending = PendingIntent.getActivity(
             context,
             1,
-            actionIntent,
+            toggleIntent,
             pendingFlags()
         )
-        val contentIntent = PendingIntent.getActivity(
+        val openPending = PendingIntent.getActivity(
             context,
             2,
             Intent(context, MainActivity::class.java),
@@ -68,13 +68,14 @@ object NotificationHelper {
                 setTextViewText(R.id.notif_title, context.getString(R.string.notif_status_title, stateLabel))
                 setTextViewText(R.id.notif_ip, context.getString(R.string.notif_status_text, ipText))
                 setTextViewText(R.id.notif_action, actionLabel)
-                setOnClickPendingIntent(R.id.notif_action, actionPending)
+                setOnClickPendingIntent(R.id.notif_action, togglePending)
+                setOnClickPendingIntent(R.id.notif_root, togglePending)
             }
             return NotificationCompat.Builder(context, NOTIF_CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_tile)
                 .setOngoing(true)
                 .setOnlyAlertOnce(true)
-                .setContentIntent(contentIntent)
+                .setContentIntent(togglePending)
                 .setCustomContentView(remoteViews)
                 .build()
         }
@@ -84,8 +85,9 @@ object NotificationHelper {
             .setContentText(context.getString(R.string.notif_status_text, ipText))
             .setSmallIcon(R.drawable.ic_tile)
             .setOngoing(true)
-            .setContentIntent(contentIntent)
-            .addAction(0, actionLabel, actionPending)
+            .setContentIntent(togglePending)
+            .addAction(0, actionLabel, togglePending)
+            .addAction(0, context.getString(R.string.action_open), openPending)
             .build()
     }
 
@@ -98,9 +100,9 @@ object NotificationHelper {
             if (!granted) return
         }
         val adbEnabled = AdbWifiController.isEnabled(context)
-        val ip = NetworkUtils.getActiveIpv4(context)
+        val ip = NetworkUtils.getActiveIp(context)
         val stateLabel = if (adbEnabled) context.getString(R.string.value_on) else context.getString(R.string.value_off)
-        val ipText = ip?.let { context.getString(R.string.ip_with_port, it) }
+        val ipText = ip?.let { context.getString(R.string.ip_with_port, NetworkUtils.formatHostForPort(it)) }
             ?: context.getString(R.string.tile_subtitle_no_ip)
 
         val lastState = Settings.getLastNotifState(context)
