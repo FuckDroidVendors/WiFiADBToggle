@@ -65,6 +65,7 @@
     <string name="setting_connection_notification">ADB connection notification</string>
     <string name="setting_adb_port">ADB port</string>
     <string name="setting_adb_port_hint">Port (1-65535)</string>
+    <string name="action_close_app">Close app</string>
     <string name="notif_quick_title">ADB quick controls</string>
     <string name="notif_quick_text">Tap an action to control ADB</string>
     <string name="action_toggle">Toggle</string>

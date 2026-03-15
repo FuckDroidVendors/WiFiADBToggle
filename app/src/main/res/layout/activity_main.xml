@@ -23,6 +23,13 @@
             android:text="@string/toggle_wifi_adb"
             android:layout_marginTop="16dp" />
 
+        <Button
+            android:id="@+id/closeApp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/action_close_app"
+            android:layout_marginTop="6dp" />
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -64,6 +64,7 @@ class MainActivity : AppCompatActivity() {
 
         statusText = findViewById(R.id.statusText)
         val toggle = findViewById<Button>(R.id.testToggle)
+        val closeApp = findViewById<Button>(R.id.closeApp)
         autoStartSwitch = findViewById(R.id.settingAutoStart)
         keepAwakeSwitch = findViewById(R.id.settingKeepAwake)
         keepScreenOnSwitch = findViewById(R.id.settingKeepScreenOn)
@@ -96,6 +97,9 @@ class MainActivity : AppCompatActivity() {
                 ScheduleManager.applyScheduleNow(this)
                 updateStatus()
             }
+        }
+        closeApp.setOnClickListener {
+            finish()
         }
 
         bindSettings()
