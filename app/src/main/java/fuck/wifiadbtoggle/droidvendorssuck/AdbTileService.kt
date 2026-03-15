@@ -9,6 +9,7 @@ import android.widget.Toast
 import android.annotation.SuppressLint
 import androidx.annotation.RequiresApi
 
+@RequiresApi(24)
 class AdbTileService : TileService() {
 
     override fun onStartListening() {

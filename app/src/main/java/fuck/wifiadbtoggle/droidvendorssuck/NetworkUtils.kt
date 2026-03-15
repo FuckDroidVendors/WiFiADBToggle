@@ -8,7 +8,7 @@ import java.net.NetworkInterface
 
 object NetworkUtils {
     fun getActiveIpv4(context: Context): String? {
-        if (Build.VERSION.SDK_INT >= 21) {
+        if (Build.VERSION.SDK_INT >= 23) {
             try {
                 val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
                 val network = cm.activeNetwork ?: return null
