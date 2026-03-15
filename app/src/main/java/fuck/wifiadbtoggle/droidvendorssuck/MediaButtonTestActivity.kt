@@ -8,11 +8,13 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 
 class MediaButtonTestActivity : AppCompatActivity() {
     private lateinit var eventText: TextView
     private lateinit var countText: TextView
     private var count = 0
+    private var receiverRegistered = false
 
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -34,11 +36,21 @@ class MediaButtonTestActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        registerReceiver(receiver, IntentFilter(MediaButtonService.ACTION_MEDIA_BUTTON_EVENT))
+        val filter = IntentFilter(MediaButtonService.ACTION_MEDIA_BUTTON_EVENT)
+        ContextCompat.registerReceiver(
+            this,
+            receiver,
+            filter,
+            ContextCompat.RECEIVER_NOT_EXPORTED
+        )
+        receiverRegistered = true
     }
 
     override fun onStop() {
-        unregisterReceiver(receiver)
+        if (receiverRegistered) {
+            unregisterReceiver(receiver)
+            receiverRegistered = false
+        }
         super.onStop()
     }
 }
