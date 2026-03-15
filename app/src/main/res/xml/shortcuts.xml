@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="toggle_adb"
+        android:enabled="true"
+        android:icon="@drawable/ic_tile"
+        android:shortcutShortLabel="@string/shortcut_toggle"
+        android:shortcutLongLabel="@string/shortcut_toggle">
+        <intent
+            android:action="fuck.wifiadbtoggle.droidvendorssuck.action.TOGGLE"
+            android:targetPackage="fuck.wifiadbtoggle.droidvendorssuck"
+            android:targetClass="fuck.wifiadbtoggle.droidvendorssuck.ShortcutActivity" />
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="enable_adb"
+        android:enabled="true"
+        android:icon="@drawable/ic_tile"
+        android:shortcutShortLabel="@string/shortcut_enable"
+        android:shortcutLongLabel="@string/shortcut_enable">
+        <intent
+            android:action="fuck.wifiadbtoggle.droidvendorssuck.action.ENABLE"
+            android:targetPackage="fuck.wifiadbtoggle.droidvendorssuck"
+            android:targetClass="fuck.wifiadbtoggle.droidvendorssuck.ShortcutActivity" />
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="disable_adb"
+        android:enabled="true"
+        android:icon="@drawable/ic_tile"
+        android:shortcutShortLabel="@string/shortcut_disable"
+        android:shortcutLongLabel="@string/shortcut_disable">
+        <intent
+            android:action="fuck.wifiadbtoggle.droidvendorssuck.action.DISABLE"
+            android:targetPackage="fuck.wifiadbtoggle.droidvendorssuck"
+            android:targetClass="fuck.wifiadbtoggle.droidvendorssuck.ShortcutActivity" />
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="open_settings"
+        android:enabled="true"
+        android:icon="@drawable/ic_tile"
+        android:shortcutShortLabel="@string/shortcut_settings"
+        android:shortcutLongLabel="@string/shortcut_settings">
+        <intent
+            android:action="fuck.wifiadbtoggle.droidvendorssuck.action.SETTINGS"
+            android:targetPackage="fuck.wifiadbtoggle.droidvendorssuck"
+            android:targetClass="fuck.wifiadbtoggle.droidvendorssuck.ShortcutActivity" />
+    </shortcut>
+</shortcuts>

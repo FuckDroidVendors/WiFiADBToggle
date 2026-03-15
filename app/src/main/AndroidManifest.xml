@@ -1,24 +1,21 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-
-    <!-- Shizuku runtime permission (requested by the app) -->
-    <uses-permission android:name="moe.shizuku.manager.permission.API_V23" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
         android:allowBackup="false"
-        android:label="WiFi ADB Toggle"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:label="@string/app_name"
         android:icon="@drawable/ic_tile"
-        android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-
-        <provider
-            android:name="rikka.shizuku.ShizukuProvider"
-            android:authorities="${applicationId}.shizuku"
-            android:multiprocess="false"
-            android:enabled="true"
-            android:exported="true"
-            android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
+        android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+        tools:targetApi="31">
 
         <activity
             android:name=".MainActivity"
@@ -27,13 +24,34 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+        </activity>
+
+        <activity
+            android:name=".ScheduleActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ShortcutActivity"
+            android:exported="true"
+            android:theme="@android:style/Theme.NoDisplay">
+            <intent-filter>
+                <action android:name="fuck.wifiadbtoggle.droidvendorssuck.action.TOGGLE" />
+                <action android:name="fuck.wifiadbtoggle.droidvendorssuck.action.ENABLE" />
+                <action android:name="fuck.wifiadbtoggle.droidvendorssuck.action.DISABLE" />
+                <action android:name="fuck.wifiadbtoggle.droidvendorssuck.action.SETTINGS" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
         </activity>
 
         <service
             android:name=".AdbTileService"
-            android:label="WiFi ADB"
+            android:label="@string/tile_service_label"
             android:icon="@drawable/ic_tile"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
+            android:settingsActivity=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
@@ -42,6 +60,33 @@
                 android:name="android.service.quicksettings.ACTIVE_TILE"
                 android:value="true" />
         </service>
+
+        <service
+            android:name=".NetworkMonitorService"
+            android:exported="false"
+            android:foregroundServiceType="dataSync" />
+
+        <service
+            android:name=".MediaButtonService"
+            android:exported="false"
+            android:foregroundServiceType="mediaPlayback" />
+
+        <service
+            android:name=".QuickControlService"
+            android:exported="false"
+            android:foregroundServiceType="dataSync" />
+
+        <receiver
+            android:name=".BootReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".ScheduleAlarmReceiver"
+            android:exported="false" />
 
     </application>
 </manifest>

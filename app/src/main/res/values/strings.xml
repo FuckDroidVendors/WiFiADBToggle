@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">WiFi ADB Toggle</string>
+    <string name="status_label">Status</string>
+    <string name="toggle_wifi_adb">Toggle WiFi ADB</string>
+    <string name="settings_label">Settings</string>
+    <string name="setting_auto_start">Auto-start monitor</string>
+    <string name="setting_keep_awake">Keep CPU awake</string>
+    <string name="setting_keep_screen_on">Keep screen on (app open)</string>
+    <string name="setting_auto_enable_ssid">Auto-enable on SSIDs</string>
+    <string name="setting_auto_enable_ethernet">Auto-enable on Ethernet</string>
+    <string name="setting_disable_on_disconnect">Disable on disconnect</string>
+    <string name="setting_ssid_hint">SSID list (comma separated)</string>
+    <string name="setting_add_current_wifi">Add current Wi-Fi</string>
+    <string name="setting_filter_bssid">Filter by MAC (BSSID)</string>
+    <string name="setting_bssid_hint">BSSID list (comma separated)</string>
+
+    <string name="tile_service_label">WiFi ADB</string>
+    <string name="tile_label">ADB</string>
+    <string name="tile_subtitle_no_ip">no IP</string>
+    <string name="ip_with_port">%1$s:5555</string>
+
+    <string name="toast_open_app_permission">Open app to grant root</string>
+    <string name="toast_no_root_permission">Root permission required</string>
+    <string name="toast_monitor_started">Monitor started</string>
+    <string name="toast_monitor_stopped">Monitor stopped</string>
+    <string name="toast_location_permission_required">Location permission required to read Wi-Fi info</string>
+    <string name="toast_wifi_info_unavailable">Wi-Fi info unavailable</string>
+
+    <string name="status_root">Root: %1$s</string>
+    <string name="status_wifi_adb">WiFi ADB: %1$s</string>
+    <string name="status_ip">IP: %1$s</string>
+    <string name="value_no_ip">no IP</string>
+    <string name="value_yes">yes</string>
+    <string name="value_no">no</string>
+    <string name="value_on">on</string>
+    <string name="value_off">off</string>
+
+    <string name="result_no_root_permission">No root</string>
+    <string name="notif_channel_name">ADB monitor</string>
+    <string name="notif_channel_desc">Monitors network to auto-toggle WiFi ADB</string>
+    <string name="notif_title">WiFi ADB monitor</string>
+    <string name="notif_text">Monitoring network changes</string>
+    <string name="shortcut_toggle">Toggle ADB</string>
+    <string name="shortcut_enable">Enable ADB</string>
+    <string name="shortcut_disable">Disable ADB</string>
+    <string name="shortcut_settings">Open settings</string>
+    <string name="setting_media_buttons">Listen for media buttons</string>
+    <string name="setting_media_pattern">Media button pattern</string>
+    <string name="media_pattern_single">Single press</string>
+    <string name="media_pattern_double">Double press</string>
+    <string name="media_pattern_triple">Triple press</string>
+    <string name="media_pattern_long">Long press</string>
+    <string name="toast_media_listener_started">Media listener started</string>
+    <string name="toast_media_listener_stopped">Media listener stopped</string>
+    <string name="toast_action_requires_root">Root required for ADB toggle</string>
+    <string name="setting_persistent_notification">Persistent notification controls</string>
+    <string name="notif_quick_title">ADB quick controls</string>
+    <string name="notif_quick_text">Tap an action to control ADB</string>
+    <string name="action_toggle">Toggle</string>
+    <string name="action_enable">Enable</string>
+    <string name="action_disable">Disable</string>
+    <string name="action_settings">Settings</string>
+    <string name="schedule_label">Schedule</string>
+    <string name="schedule_add">Add schedule</string>
+    <string name="schedule_edit">Edit schedule</string>
+    <string name="schedule_title_hint">Title</string>
+    <string name="schedule_start">Start</string>
+    <string name="schedule_end">End</string>
+    <string name="schedule_mode">Mode</string>
+    <string name="schedule_mode_force_on">Force ON</string>
+    <string name="schedule_mode_force_off">Force OFF</string>
+    <string name="schedule_mode_respect">Respect network rules</string>
+    <string name="schedule_enabled">Enabled</string>
+    <string name="schedule_save">Save</string>
+    <string name="schedule_cancel">Cancel</string>
+    <string name="schedule_delete">Delete</string>
+    <string name="schedule_empty">No schedules yet</string>
+    <string name="schedule_invalid_time">End must be after start</string>
+    <string name="schedule_disabled_suffix"> (disabled)</string>
+</resources>

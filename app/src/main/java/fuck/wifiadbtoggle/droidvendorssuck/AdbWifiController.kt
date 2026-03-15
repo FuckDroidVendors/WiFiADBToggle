@@ -1,4 +1,4 @@
-package com.example.wifitoggle
+package fuck.wifiadbtoggle.droidvendorssuck
 
 import android.content.Context
 
@@ -16,9 +16,17 @@ object AdbWifiController {
     fun toggle(context: Context) {
         val enabled = isEnabled(context)
         if (enabled) {
-            ShellRunner.runPrivileged(context, "setprop service.adb.tcp.port -1; stop adbd; start adbd")
+            disable(context)
         } else {
-            ShellRunner.runPrivileged(context, "setprop service.adb.tcp.port $PORT; stop adbd; start adbd")
+            enable(context)
         }
+    }
+
+    fun enable(context: Context) {
+        ShellRunner.runPrivileged(context, "setprop service.adb.tcp.port $PORT; stop adbd; start adbd")
+    }
+
+    fun disable(context: Context) {
+        ShellRunner.runPrivileged(context, "setprop service.adb.tcp.port -1; stop adbd; start adbd")
     }
 }

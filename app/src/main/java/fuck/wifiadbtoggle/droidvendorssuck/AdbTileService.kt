@@ -1,4 +1,4 @@
-package com.example.wifitoggle
+package fuck.wifiadbtoggle.droidvendorssuck
 
 import android.app.PendingIntent
 import android.content.Intent
@@ -18,8 +18,11 @@ class AdbTileService : TileService() {
 
     override fun onClick() {
         super.onClick()
-        if (!ShellRunner.canUseRoot() && !ShellRunner.canUseShizuku()) {
-            Toast.makeText(this, "Open app to grant Shizuku or root", Toast.LENGTH_SHORT).show()
+        if (!ShellRunner.canUseRoot()) {
+            ShellRunner.requestRoot(this)
+            if (!ShellRunner.canUseRoot()) {
+                Toast.makeText(this, getString(R.string.toast_open_app_permission), Toast.LENGTH_SHORT).show()
+            }
             val intent = packageManager.getLaunchIntentForPackage(packageName)
             if (intent != null) {
                 if (android.os.Build.VERSION.SDK_INT >= 34) {
@@ -38,11 +41,15 @@ class AdbTileService : TileService() {
         val tile = qsTile ?: return
         val enabled = AdbWifiController.isEnabled(this)
         tile.state = if (enabled) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE
-        val ip = NetworkUtils.getLocalIpV4()
-        tile.label = "ADB"
+        val ip = NetworkUtils.getActiveIpv4(this)
+        tile.label = getString(R.string.tile_label)
         tile.icon = Icon.createWithResource(this, R.drawable.ic_tile)
         if (android.os.Build.VERSION.SDK_INT >= 29) {
-            tile.subtitle = if (ip != null) "$ip:5555" else "no IP"
+            tile.subtitle = if (ip != null) {
+                getString(R.string.ip_with_port, ip)
+            } else {
+                getString(R.string.tile_subtitle_no_ip)
+            }
         }
         tile.updateTile()
     }

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <EditText
+            android:id="@+id/scheduleTitleInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/schedule_title_hint" />
+
+        <TextView
+            android:id="@+id/scheduleStartLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/schedule_start"
+            android:layout_marginTop="10dp" />
+
+        <Button
+            android:id="@+id/scheduleStartButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/schedule_start" />
+
+        <TextView
+            android:id="@+id/scheduleEndLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/schedule_end"
+            android:layout_marginTop="8dp" />
+
+        <Button
+            android:id="@+id/scheduleEndButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/schedule_end" />
+
+        <TextView
+            android:id="@+id/scheduleModeLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/schedule_mode"
+            android:layout_marginTop="10dp" />
+
+        <RadioGroup
+            android:id="@+id/scheduleModeGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RadioButton
+                android:id="@+id/scheduleModeForceOn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/schedule_mode_force_on" />
+
+            <RadioButton
+                android:id="@+id/scheduleModeForceOff"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/schedule_mode_force_off" />
+
+            <RadioButton
+                android:id="@+id/scheduleModeRespect"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/schedule_mode_respect" />
+        </RadioGroup>
+
+        <Switch
+            android:id="@+id/scheduleEnabled"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/schedule_enabled"
+            android:layout_marginTop="6dp" />
+    </LinearLayout>
+</ScrollView>

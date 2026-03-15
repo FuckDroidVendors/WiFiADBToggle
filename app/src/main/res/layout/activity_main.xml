@@ -1,29 +1,163 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="24dp"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/statusText"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="16sp"
-        android:text="Status" />
+        android:padding="24dp"
+        android:orientation="vertical">
 
-    <Button
-        android:id="@+id/requestShizuku"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Request Shizuku Permission"
-        android:layout_marginTop="16dp" />
+        <TextView
+            android:id="@+id/statusText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:text="@string/status_label" />
 
-    <Button
-        android:id="@+id/testToggle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Toggle WiFi ADB"
-        android:layout_marginTop="8dp" />
+        <Button
+            android:id="@+id/testToggle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/toggle_wifi_adb"
+            android:layout_marginTop="16dp" />
 
-</LinearLayout>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/settings_label"
+            android:layout_marginTop="20dp"
+            android:textStyle="bold" />
+
+        <Switch
+            android:id="@+id/settingAutoStart"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/setting_auto_start"
+            android:layout_marginTop="8dp" />
+
+        <Switch
+            android:id="@+id/settingKeepAwake"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/setting_keep_awake"
+            android:layout_marginTop="4dp" />
+
+        <Switch
+            android:id="@+id/settingKeepScreenOn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/setting_keep_screen_on"
+            android:layout_marginTop="4dp" />
+
+        <Switch
+            android:id="@+id/settingAutoEnableEthernet"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/setting_auto_enable_ethernet"
+            android:layout_marginTop="4dp" />
+
+        <Switch
+            android:id="@+id/settingDisableOnDisconnect"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/setting_disable_on_disconnect"
+            android:layout_marginTop="4dp" />
+
+        <Switch
+            android:id="@+id/settingAutoEnableSsid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/setting_auto_enable_ssid"
+            android:layout_marginTop="4dp" />
+
+        <EditText
+            android:id="@+id/settingSsidList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/setting_ssid_hint"
+            android:layout_marginTop="4dp"
+            android:singleLine="true" />
+
+        <Button
+            android:id="@+id/addCurrentWifi"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/setting_add_current_wifi"
+            android:layout_marginTop="6dp" />
+
+        <Switch
+            android:id="@+id/settingFilterBssid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/setting_filter_bssid"
+            android:layout_marginTop="10dp" />
+
+        <EditText
+            android:id="@+id/settingBssidList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/setting_bssid_hint"
+            android:layout_marginTop="4dp"
+            android:singleLine="true" />
+
+        <Switch
+            android:id="@+id/settingMediaButtons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/setting_media_buttons"
+            android:layout_marginTop="10dp" />
+
+        <Switch
+            android:id="@+id/settingPersistentNotification"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/setting_persistent_notification"
+            android:layout_marginTop="4dp" />
+
+        <TextView
+            android:id="@+id/settingMediaPatternLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/setting_media_pattern"
+            android:layout_marginTop="6dp" />
+
+        <RadioGroup
+            android:id="@+id/settingMediaPatternGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RadioButton
+                android:id="@+id/mediaPatternSingle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/media_pattern_single" />
+
+            <RadioButton
+                android:id="@+id/mediaPatternDouble"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/media_pattern_double" />
+
+            <RadioButton
+                android:id="@+id/mediaPatternTriple"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/media_pattern_triple" />
+
+            <RadioButton
+                android:id="@+id/mediaPatternLong"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/media_pattern_long" />
+        </RadioGroup>
+
+        <Button
+            android:id="@+id/openSchedule"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/schedule_label"
+            android:layout_marginTop="12dp" />
+    </LinearLayout>
+</ScrollView>
