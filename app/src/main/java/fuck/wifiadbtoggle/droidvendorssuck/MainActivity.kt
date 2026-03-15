@@ -106,6 +106,13 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
+    override fun onStop() {
+        super.onStop()
+        if (isChangingConfigurations) return
+        if (Settings.isKeepScreenOnEnabled(this)) return
+        finish()
+    }
+
     private fun updateStatus() {
         val root = ShellRunner.canUseRoot()
         val enabled = AdbWifiController.isEnabled(this)
