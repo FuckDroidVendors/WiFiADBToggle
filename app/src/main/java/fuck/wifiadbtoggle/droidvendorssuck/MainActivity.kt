@@ -5,8 +5,11 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.wifi.WifiManager
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.View
 import android.view.WindowManager
 import android.widget.Button
 import android.widget.EditText
@@ -39,6 +42,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mediaPatternTriple: RadioButton
     private lateinit var mediaPatternLong: RadioButton
     private lateinit var openScheduleButton: Button
+    private val monitorHandler = Handler(Looper.getMainLooper())
+    private val monitorRestartRunnable = Runnable { NetworkMonitorService.start(this) }
 
     private val requestLocationPermission =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
@@ -90,6 +95,11 @@ class MainActivity : AppCompatActivity() {
         ScheduleAlarmScheduler.scheduleNext(this)
     }
 
+    override fun onDestroy() {
+        monitorHandler.removeCallbacks(monitorRestartRunnable)
+        super.onDestroy()
+    }
+
     private fun updateStatus() {
         val root = ShellRunner.canUseRoot()
         val enabled = AdbWifiController.isEnabled(this)
@@ -120,6 +130,7 @@ class MainActivity : AppCompatActivity() {
         applyKeepScreenOn(Settings.isKeepScreenOnEnabled(this))
         mediaButtonsSwitch.isChecked = Settings.isMediaButtonsEnabled(this)
         persistentNotificationSwitch.isChecked = Settings.isPersistentNotificationEnabled(this)
+        updateMediaPatternVisibility(mediaButtonsSwitch.isChecked)
 
         when (Settings.getMediaPattern(this)) {
             MediaPattern.SINGLE -> mediaPatternSingle.isChecked = true
@@ -141,7 +152,7 @@ class MainActivity : AppCompatActivity() {
 
         keepAwakeSwitch.setOnCheckedChangeListener { _, isChecked ->
             Settings.setKeepAwakeEnabled(this, isChecked)
-            NetworkMonitorService.start(this)
+            scheduleMonitorRestart()
         }
 
         keepScreenOnSwitch.setOnCheckedChangeListener { _, isChecked ->
@@ -151,22 +162,22 @@ class MainActivity : AppCompatActivity() {
 
         autoEnableEthernetSwitch.setOnCheckedChangeListener { _, isChecked ->
             Settings.setAutoEnableEthernetEnabled(this, isChecked)
-            NetworkMonitorService.start(this)
+            scheduleMonitorRestart()
         }
 
         disableOnDisconnectSwitch.setOnCheckedChangeListener { _, isChecked ->
             Settings.setDisableOnDisconnectEnabled(this, isChecked)
-            NetworkMonitorService.start(this)
+            scheduleMonitorRestart()
         }
 
         autoEnableSsidSwitch.setOnCheckedChangeListener { _, isChecked ->
             Settings.setAutoEnableSsidEnabled(this, isChecked)
-            NetworkMonitorService.start(this)
+            scheduleMonitorRestart()
         }
 
         filterBssidSwitch.setOnCheckedChangeListener { _, isChecked ->
             Settings.setFilterBssidEnabled(this, isChecked)
-            NetworkMonitorService.start(this)
+            scheduleMonitorRestart()
         }
 
         ssidListEdit.addTextChangedListener(object : TextWatcher {
@@ -174,7 +185,7 @@ class MainActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
                 Settings.setSsidList(this@MainActivity, s?.toString() ?: "")
-                NetworkMonitorService.start(this@MainActivity)
+                scheduleMonitorRestart()
             }
         })
 
@@ -183,7 +194,7 @@ class MainActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
                 Settings.setBssidList(this@MainActivity, s?.toString() ?: "")
-                NetworkMonitorService.start(this@MainActivity)
+                scheduleMonitorRestart()
             }
         })
 
@@ -201,6 +212,7 @@ class MainActivity : AppCompatActivity() {
 
         mediaButtonsSwitch.setOnCheckedChangeListener { _, isChecked ->
             Settings.setMediaButtonsEnabled(this, isChecked)
+            updateMediaPatternVisibility(isChecked)
             if (isChecked) {
                 MediaButtonService.start(this)
                 ToastUtils.showShort(this, getString(R.string.toast_media_listener_started))
@@ -240,6 +252,18 @@ class MainActivity : AppCompatActivity() {
         if (Settings.isPersistentNotificationEnabled(this)) {
             QuickControlService.start(this)
         }
+    }
+
+    private fun scheduleMonitorRestart() {
+        monitorHandler.removeCallbacks(monitorRestartRunnable)
+        if (!Settings.isAutoStartEnabled(this)) return
+        monitorHandler.postDelayed(monitorRestartRunnable, 400L)
+    }
+
+    private fun updateMediaPatternVisibility(enabled: Boolean) {
+        val visibility = if (enabled) View.VISIBLE else View.GONE
+        findViewById<TextView>(R.id.settingMediaPatternLabel).visibility = visibility
+        mediaPatternGroup.visibility = visibility
     }
 
     private fun addCurrentWifi() {
