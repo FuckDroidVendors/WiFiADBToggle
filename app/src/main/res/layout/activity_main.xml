@@ -109,6 +109,13 @@
             android:text="@string/setting_media_buttons"
             android:layout_marginTop="10dp" />
 
+        <Button
+            android:id="@+id/openMediaTest"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/setting_media_test"
+            android:layout_marginTop="6dp" />
+
         <Switch
             android:id="@+id/settingPersistentNotification"
             android:layout_width="match_parent"

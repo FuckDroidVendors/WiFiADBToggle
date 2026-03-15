@@ -82,6 +82,7 @@ class MediaButtonService : Service() {
         ) {
             return
         }
+        broadcastEvent(event)
         when (event.action) {
             KeyEvent.ACTION_DOWN -> {
                 if (event.repeatCount == 0) {
@@ -145,6 +146,9 @@ class MediaButtonService : Service() {
         private const val NOTIF_ID = 2001
         private const val MULTI_PRESS_WINDOW_MS = 500L
         private const val LONG_PRESS_MS = 800L
+        const val ACTION_MEDIA_BUTTON_EVENT = "fuck.wifiadbtoggle.droidvendorssuck.action.MEDIA_BUTTON_EVENT"
+        const val EXTRA_EVENT_NAME = "extra_event_name"
+        const val EXTRA_EVENT_ACTION = "extra_event_action"
 
         fun start(context: Context) {
             if (!Settings.isMediaButtonsEnabled(context)) return
@@ -160,5 +164,24 @@ class MediaButtonService : Service() {
             val intent = Intent(context, MediaButtonService::class.java)
             context.stopService(intent)
         }
+    }
+
+    private fun broadcastEvent(event: KeyEvent) {
+        val name = when (event.keyCode) {
+            KeyEvent.KEYCODE_HEADSETHOOK -> "HEADSETHOOK"
+            KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE -> "PLAY_PAUSE"
+            else -> event.keyCode.toString()
+        }
+        val action = when (event.action) {
+            KeyEvent.ACTION_DOWN -> "DOWN"
+            KeyEvent.ACTION_UP -> "UP"
+            else -> event.action.toString()
+        }
+        val intent = Intent(ACTION_MEDIA_BUTTON_EVENT).apply {
+            setPackage(packageName)
+            putExtra(EXTRA_EVENT_NAME, name)
+            putExtra(EXTRA_EVENT_ACTION, action)
+        }
+        sendBroadcast(intent)
     }
 }

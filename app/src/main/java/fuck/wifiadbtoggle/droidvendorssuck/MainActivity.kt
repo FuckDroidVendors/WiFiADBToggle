@@ -35,6 +35,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var bssidListEdit: EditText
     private lateinit var addCurrentWifiButton: Button
     private lateinit var mediaButtonsSwitch: Switch
+    private lateinit var mediaTestButton: Button
     private lateinit var persistentNotificationSwitch: Switch
     private lateinit var connectionNotificationSwitch: Switch
     private lateinit var adbPortEdit: EditText
@@ -74,6 +75,7 @@ class MainActivity : AppCompatActivity() {
         bssidListEdit = findViewById(R.id.settingBssidList)
         addCurrentWifiButton = findViewById(R.id.addCurrentWifi)
         mediaButtonsSwitch = findViewById(R.id.settingMediaButtons)
+        mediaTestButton = findViewById(R.id.openMediaTest)
         persistentNotificationSwitch = findViewById(R.id.settingPersistentNotification)
         connectionNotificationSwitch = findViewById(R.id.settingConnectionNotification)
         adbPortEdit = findViewById(R.id.settingAdbPort)
@@ -247,6 +249,10 @@ class MainActivity : AppCompatActivity() {
                 MediaButtonService.stop(this)
                 ToastUtils.showShort(this, getString(R.string.toast_media_listener_stopped))
             }
+        }
+
+        mediaTestButton.setOnClickListener {
+            startActivity(Intent(this, MediaButtonTestActivity::class.java))
         }
 
         persistentNotificationSwitch.setOnCheckedChangeListener { _, isChecked ->

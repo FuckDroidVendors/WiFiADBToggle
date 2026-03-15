@@ -39,6 +39,10 @@
             android:exported="false" />
 
         <activity
+            android:name=".MediaButtonTestActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".ShortcutActivity"
             android:exported="true"
             android:theme="@android:style/Theme.NoDisplay">

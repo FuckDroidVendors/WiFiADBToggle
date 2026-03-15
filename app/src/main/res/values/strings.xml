@@ -48,6 +48,7 @@
     <string name="shortcut_disable">Disable ADB</string>
     <string name="shortcut_settings">Open settings</string>
     <string name="setting_media_buttons">Listen for media buttons</string>
+    <string name="setting_media_test">Test media buttons</string>
     <string name="setting_media_pattern">Media button pattern</string>
     <string name="media_pattern_single">Single press</string>
     <string name="media_pattern_double">Double press</string>
@@ -56,6 +57,10 @@
     <string name="toast_media_listener_started">Media listener started</string>
     <string name="toast_media_listener_stopped">Media listener stopped</string>
     <string name="toast_action_requires_root">Root required for ADB toggle</string>
+    <string name="media_test_title">Media button test</string>
+    <string name="media_test_hint">Press media buttons now</string>
+    <string name="media_test_event">Last event: %1$s</string>
+    <string name="media_test_count">Events: %1$d</string>
     <string name="setting_persistent_notification">Persistent notification controls</string>
     <string name="setting_connection_notification">ADB connection notification</string>
     <string name="setting_adb_port">ADB port</string>
