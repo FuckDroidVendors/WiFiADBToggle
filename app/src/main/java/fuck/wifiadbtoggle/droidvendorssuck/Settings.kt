@@ -16,9 +16,11 @@ object Settings {
     private const val KEY_MEDIA_BUTTONS = "media_buttons"
     private const val KEY_MEDIA_PATTERN = "media_pattern"
     private const val KEY_PERSISTENT_NOTIFICATION = "persistent_notification"
+    private const val KEY_CONN_NOTIFICATION = "adb_connection_notification"
     private const val KEY_SCHEDULE_ENABLED = "schedule_enabled"
     private const val KEY_LAST_NOTIF_STATE = "last_notif_state"
     private const val KEY_LAST_NOTIF_IP = "last_notif_ip"
+    private const val KEY_LAST_CONN_SUMMARY = "last_conn_summary"
 
     private fun prefs(context: Context) =
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
@@ -148,6 +150,13 @@ object Settings {
         prefs(context).edit().putBoolean(KEY_PERSISTENT_NOTIFICATION, enabled).apply()
     }
 
+    fun isConnectionNotificationEnabled(context: Context): Boolean =
+        prefs(context).getBoolean(KEY_CONN_NOTIFICATION, false)
+
+    fun setConnectionNotificationEnabled(context: Context, enabled: Boolean) {
+        prefs(context).edit().putBoolean(KEY_CONN_NOTIFICATION, enabled).apply()
+    }
+
     fun isScheduleEnabled(context: Context): Boolean =
         prefs(context).getBoolean(KEY_SCHEDULE_ENABLED, false)
 
@@ -174,6 +183,17 @@ object Settings {
             .remove(KEY_LAST_NOTIF_STATE)
             .remove(KEY_LAST_NOTIF_IP)
             .apply()
+    }
+
+    fun getLastConnSummary(context: Context): String? =
+        prefs(context).getString(KEY_LAST_CONN_SUMMARY, null)
+
+    fun setLastConnSummary(context: Context, value: String?) {
+        prefs(context).edit().putString(KEY_LAST_CONN_SUMMARY, value).apply()
+    }
+
+    fun clearLastConnSummary(context: Context) {
+        prefs(context).edit().remove(KEY_LAST_CONN_SUMMARY).apply()
     }
 }
 

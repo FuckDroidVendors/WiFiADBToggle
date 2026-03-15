@@ -36,6 +36,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var addCurrentWifiButton: Button
     private lateinit var mediaButtonsSwitch: Switch
     private lateinit var persistentNotificationSwitch: Switch
+    private lateinit var connectionNotificationSwitch: Switch
     private lateinit var mediaPatternGroup: RadioGroup
     private lateinit var mediaPatternSingle: RadioButton
     private lateinit var mediaPatternDouble: RadioButton
@@ -73,6 +74,7 @@ class MainActivity : AppCompatActivity() {
         addCurrentWifiButton = findViewById(R.id.addCurrentWifi)
         mediaButtonsSwitch = findViewById(R.id.settingMediaButtons)
         persistentNotificationSwitch = findViewById(R.id.settingPersistentNotification)
+        connectionNotificationSwitch = findViewById(R.id.settingConnectionNotification)
         mediaPatternGroup = findViewById(R.id.settingMediaPatternGroup)
         mediaPatternSingle = findViewById(R.id.mediaPatternSingle)
         mediaPatternDouble = findViewById(R.id.mediaPatternDouble)
@@ -136,6 +138,7 @@ class MainActivity : AppCompatActivity() {
         applyKeepScreenOn(Settings.isKeepScreenOnEnabled(this))
         mediaButtonsSwitch.isChecked = Settings.isMediaButtonsEnabled(this)
         persistentNotificationSwitch.isChecked = Settings.isPersistentNotificationEnabled(this)
+        connectionNotificationSwitch.isChecked = Settings.isConnectionNotificationEnabled(this)
         scheduleEnabledSwitch.isChecked = Settings.isScheduleEnabled(this)
         updateMediaPatternVisibility(mediaButtonsSwitch.isChecked)
 
@@ -251,6 +254,15 @@ class MainActivity : AppCompatActivity() {
                 } else {
                     NotificationHelper.cancelStatus(this)
                 }
+            }
+        }
+
+        connectionNotificationSwitch.setOnCheckedChangeListener { _, isChecked ->
+            Settings.setConnectionNotificationEnabled(this, isChecked)
+            if (isChecked) {
+                NotificationHelper.notifyConnections(this)
+            } else {
+                NotificationHelper.cancelConnections(this)
             }
         }
 

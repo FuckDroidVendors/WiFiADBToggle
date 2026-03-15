@@ -57,6 +57,7 @@
     <string name="toast_media_listener_stopped">Media listener stopped</string>
     <string name="toast_action_requires_root">Root required for ADB toggle</string>
     <string name="setting_persistent_notification">Persistent notification controls</string>
+    <string name="setting_connection_notification">ADB connection notification</string>
     <string name="notif_quick_title">ADB quick controls</string>
     <string name="notif_quick_text">Tap an action to control ADB</string>
     <string name="action_toggle">Toggle</string>
@@ -66,6 +67,11 @@
     <string name="action_turn_on">TURN ON</string>
     <string name="action_turn_off">TURN OFF</string>
     <string name="action_open">OPEN</string>
+    <string name="notif_conn_title">ADB connections</string>
+    <string name="notif_conn_none">No active connections</string>
+    <string name="notif_conn_count">Active: %1$d</string>
+    <string name="notif_conn_more">more</string>
+    <string name="notif_conn_root_required">Root required to read connections</string>
     <string name="schedule_label">Schedule</string>
     <string name="setting_schedule_enabled">Enable schedule</string>
     <string name="schedule_add">Add schedule</string>

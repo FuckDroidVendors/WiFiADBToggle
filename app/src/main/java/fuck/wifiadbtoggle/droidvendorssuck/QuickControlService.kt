@@ -12,6 +12,7 @@ class QuickControlService : Service() {
         super.onCreate()
         if (Build.VERSION.SDK_INT >= 26) {
             startForeground(NotificationHelper.STATUS_NOTIF_ID, buildNotification())
+            NotificationHelper.notifyConnections(this)
         } else {
             NotificationHelper.notifyStatus(this)
             stopSelf()

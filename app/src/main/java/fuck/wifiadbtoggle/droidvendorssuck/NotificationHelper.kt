@@ -14,6 +14,7 @@ import androidx.core.content.ContextCompat
 
 object NotificationHelper {
     const val STATUS_NOTIF_ID = 1001
+    const val CONNECTION_NOTIF_ID = 1002
     private const val NOTIF_CHANNEL_ID = "adb_monitor"
 
     fun buildMonitorNotification(context: Context): Notification {
@@ -108,6 +109,7 @@ object NotificationHelper {
         val lastState = Settings.getLastNotifState(context)
         val lastIp = Settings.getLastNotifIp(context)
         if (lastState != null && lastIp != null && lastState == stateLabel && lastIp == ipText) {
+            notifyConnections(context)
             return
         }
         Settings.setLastNotifState(context, stateLabel)
@@ -115,12 +117,96 @@ object NotificationHelper {
 
         val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         manager.notify(STATUS_NOTIF_ID, buildStatusNotification(context, adbEnabled, ipText, stateLabel))
+        notifyConnections(context)
     }
 
     fun cancelStatus(context: Context) {
         val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         manager.cancel(STATUS_NOTIF_ID)
         Settings.clearLastNotif(context)
+    }
+
+    fun notifyConnections(context: Context) {
+        if (!Settings.isConnectionNotificationEnabled(context)) {
+            cancelConnections(context)
+            return
+        }
+        if (Build.VERSION.SDK_INT >= 33) {
+            val granted = ContextCompat.checkSelfPermission(
+                context,
+                android.Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+            if (!granted) return
+        }
+        val summary = buildConnectionSummary(context)
+        val last = Settings.getLastConnSummary(context)
+        if (last != null && last == summary.key) return
+        Settings.setLastConnSummary(context, summary.key)
+        val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        manager.notify(CONNECTION_NOTIF_ID, summary.notification)
+    }
+
+    fun cancelConnections(context: Context) {
+        val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        manager.cancel(CONNECTION_NOTIF_ID)
+        Settings.clearLastConnSummary(context)
+    }
+
+    private data class ConnectionSummary(val key: String, val notification: Notification)
+
+    private fun buildConnectionSummary(context: Context): ConnectionSummary {
+        ensureChannel(context)
+        val openPending = PendingIntent.getActivity(
+            context,
+            3,
+            Intent(context, MainActivity::class.java),
+            pendingFlags()
+        )
+        val hasRoot = ShellRunner.canUseRoot()
+        if (!hasRoot) {
+            val notification = NotificationCompat.Builder(context, NOTIF_CHANNEL_ID)
+                .setContentTitle(context.getString(R.string.notif_conn_title))
+                .setContentText(context.getString(R.string.notif_conn_root_required))
+                .setSmallIcon(R.drawable.ic_tile)
+                .setOngoing(true)
+                .setContentIntent(openPending)
+                .build()
+            return ConnectionSummary("root_required", notification)
+        }
+
+        val info = AdbConnectionUtils.getActiveConnections(context)
+        val hosts = info?.hosts ?: emptyList()
+        val limited = hosts.take(6)
+        val more = hosts.size - limited.size
+        val countText = if (hosts.isEmpty()) {
+            context.getString(R.string.notif_conn_none)
+        } else {
+            context.getString(R.string.notif_conn_count, hosts.size)
+        }
+        val details = if (hosts.isEmpty()) {
+            context.getString(R.string.notif_conn_none)
+        } else {
+            buildString {
+                append(limited.joinToString("\n"))
+                if (more > 0) {
+                    append("\n+")
+                    append(more)
+                    append(" ")
+                    append(context.getString(R.string.notif_conn_more))
+                }
+            }
+        }
+        val notification = NotificationCompat.Builder(context, NOTIF_CHANNEL_ID)
+            .setContentTitle(context.getString(R.string.notif_conn_title))
+            .setContentText(countText)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(details))
+            .setSmallIcon(R.drawable.ic_tile)
+            .setOngoing(true)
+            .setContentIntent(openPending)
+            .setOnlyAlertOnce(true)
+            .build()
+        val key = "${hosts.size}|${limited.joinToString(",")}|$more"
+        return ConnectionSummary(key, notification)
     }
 
     private fun ensureChannel(context: Context) {

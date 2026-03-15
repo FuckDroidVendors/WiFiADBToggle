@@ -29,6 +29,7 @@ You can also run `scripts/gen-wrapper.sh` to generate the wrapper JAR if Gradle 
 ## Notes
 - The tile subtitle shows `IP:5555` (IPv4) or `[IPv6]:5555` when it can detect a non-loopback address.
 - If the tile says `no IP`, connect to Wi-Fi or check network availability.
+- Optional ADB connection notification shows active client IPs when enabled (requires root).
 - Root path uses `su -c` and works with Magisk or other superuser managers.
 
 ## Files
