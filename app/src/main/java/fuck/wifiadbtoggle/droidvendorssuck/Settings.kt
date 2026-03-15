@@ -62,6 +62,12 @@ object Settings {
         prefs(context).edit().putBoolean(KEY_DISABLE_ON_DISCONNECT, enabled).apply()
     }
 
+    fun isAnyMonitorRuleEnabled(context: Context): Boolean {
+        return isAutoEnableSsidEnabled(context) ||
+            isAutoEnableEthernetEnabled(context) ||
+            isDisableOnDisconnectEnabled(context)
+    }
+
     fun isFilterBssidEnabled(context: Context): Boolean =
         prefs(context).getBoolean(KEY_FILTER_BSSID, false)
 

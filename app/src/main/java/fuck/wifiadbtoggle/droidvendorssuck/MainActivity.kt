@@ -250,7 +250,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun scheduleMonitorRestart() {
         monitorHandler.removeCallbacks(monitorRestartRunnable)
-        if (!Settings.isAutoStartEnabled(this)) return
+        if (!Settings.isAutoStartEnabled(this) || !Settings.isAnyMonitorRuleEnabled(this)) {
+            NetworkMonitorService.stop(this)
+            return
+        }
         monitorHandler.postDelayed(monitorRestartRunnable, 400L)
     }
 

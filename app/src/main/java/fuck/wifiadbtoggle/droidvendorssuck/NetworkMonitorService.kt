@@ -38,7 +38,7 @@ class NetworkMonitorService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        if (!Settings.isAutoStartEnabled(this)) {
+        if (!Settings.isAutoStartEnabled(this) || !Settings.isAnyMonitorRuleEnabled(this)) {
             stopSelf()
             return START_NOT_STICKY
         }
@@ -82,7 +82,10 @@ class NetworkMonitorService : Service() {
     }
 
     private fun evaluateAndApply() {
-        if (!Settings.isAutoStartEnabled(this)) return
+        if (!Settings.isAutoStartEnabled(this) || !Settings.isAnyMonitorRuleEnabled(this)) {
+            stopSelf()
+            return
+        }
         if (!ShellRunner.canUseRoot()) return
         val scheduleMode = ScheduleManager.getActiveMode(this)
         if (scheduleMode == ScheduleMode.FORCE_ON) {
@@ -195,7 +198,9 @@ class NetworkMonitorService : Service() {
         private const val NOTIF_ID = 1001
 
         fun start(context: Context) {
-            if (!Settings.isAutoStartEnabled(context)) return
+            if (!Settings.isAutoStartEnabled(context) || !Settings.isAnyMonitorRuleEnabled(context)) {
+                return
+            }
             val intent = Intent(context, NetworkMonitorService::class.java)
             if (Build.VERSION.SDK_INT >= 26) {
                 ContextCompat.startForegroundService(context, intent)
