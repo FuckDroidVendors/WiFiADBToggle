@@ -17,6 +17,11 @@ object ScheduleAlarmScheduler {
             pendingFlags()
         )
 
+        if (!ScheduleDbHelper(context).hasAnyEnabled()) {
+            alarmManager.cancel(pending)
+            return
+        }
+
         val next = ScheduleManager.getNextBoundary(context)
         if (next == null) {
             alarmManager.cancel(pending)

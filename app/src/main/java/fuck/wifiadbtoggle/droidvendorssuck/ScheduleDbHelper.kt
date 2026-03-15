@@ -75,6 +75,21 @@ class ScheduleDbHelper(context: Context) :
         return cursor.use { readCursor(it) }
     }
 
+    fun hasAnyEnabled(): Boolean {
+        val db = readableDatabase
+        val cursor = db.query(
+            TABLE,
+            arrayOf(COL_ID),
+            "$COL_ENABLED=1",
+            null,
+            null,
+            null,
+            null,
+            "1"
+        )
+        return cursor.use { it.moveToFirst() }
+    }
+
     private fun readCursor(cursor: Cursor): List<ScheduleEntry> {
         val items = mutableListOf<ScheduleEntry>()
         val idIdx = cursor.getColumnIndexOrThrow(COL_ID)
