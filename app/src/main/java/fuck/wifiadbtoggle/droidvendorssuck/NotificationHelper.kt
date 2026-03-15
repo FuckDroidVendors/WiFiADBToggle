@@ -6,9 +6,11 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 
 object NotificationHelper {
     const val STATUS_NOTIF_ID = 1001
@@ -88,6 +90,13 @@ object NotificationHelper {
     }
 
     fun notifyStatus(context: Context) {
+        if (Build.VERSION.SDK_INT >= 33) {
+            val granted = ContextCompat.checkSelfPermission(
+                context,
+                android.Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+            if (!granted) return
+        }
         val adbEnabled = AdbWifiController.isEnabled(context)
         val ip = NetworkUtils.getActiveIpv4(context)
         val stateLabel = if (adbEnabled) context.getString(R.string.value_on) else context.getString(R.string.value_off)
