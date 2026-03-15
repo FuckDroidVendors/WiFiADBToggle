@@ -99,7 +99,12 @@ class MainActivity : AppCompatActivity() {
             }
         }
         closeApp.setOnClickListener {
-            finish()
+            if (android.os.Build.VERSION.SDK_INT >= 21) {
+                finishAndRemoveTask()
+            } else {
+                finish()
+            }
+            finishAffinity()
         }
 
         bindSettings()
