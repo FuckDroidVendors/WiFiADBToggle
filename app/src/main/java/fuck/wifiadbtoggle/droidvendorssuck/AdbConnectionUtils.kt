@@ -4,21 +4,21 @@ import java.net.Inet6Address
 import java.net.InetAddress
 
 object AdbConnectionUtils {
-    private const val ADB_PORT_HEX = "15B3"
 
     data class ConnectionInfo(val hosts: List<String>) {
         val count: Int = hosts.size
     }
 
-    fun getActiveConnections(context: android.content.Context): ConnectionInfo? {
+    fun getActiveConnections(context: android.content.Context, port: Int): ConnectionInfo? {
         val result = ShellRunner.runPrivileged(context, "cat /proc/net/tcp /proc/net/tcp6")
         if (!result.success || result.output.isBlank()) return null
-        val hosts = parseProcNet(result.output)
+        val hosts = parseProcNet(result.output, port)
         return ConnectionInfo(hosts)
     }
 
-    private fun parseProcNet(output: String): List<String> {
+    private fun parseProcNet(output: String, port: Int): List<String> {
         val uniqueHosts = linkedSetOf<String>()
+        val portHex = port.toString(16).padStart(4, '0').uppercase()
         output.lineSequence().forEach { line ->
             val trimmed = line.trim()
             if (trimmed.isEmpty() || trimmed.startsWith("sl")) return@forEach
@@ -29,7 +29,7 @@ object AdbConnectionUtils {
             val state = parts[3]
             if (state != "01") return@forEach
             val localPort = local.substringAfter(":", "")
-            if (!localPort.equals(ADB_PORT_HEX, ignoreCase = true)) return@forEach
+            if (!localPort.equals(portHex, ignoreCase = true)) return@forEach
             val remoteAddrHex = remote.substringBefore(":", "")
             val remotePort = remote.substringAfter(":", "")
             if (remotePort.equals("0000", ignoreCase = true)) return@forEach

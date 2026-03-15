@@ -17,6 +17,7 @@ object Settings {
     private const val KEY_MEDIA_PATTERN = "media_pattern"
     private const val KEY_PERSISTENT_NOTIFICATION = "persistent_notification"
     private const val KEY_CONN_NOTIFICATION = "adb_connection_notification"
+    private const val KEY_ADB_PORT = "adb_port"
     private const val KEY_SCHEDULE_ENABLED = "schedule_enabled"
     private const val KEY_LAST_NOTIF_STATE = "last_notif_state"
     private const val KEY_LAST_NOTIF_IP = "last_notif_ip"
@@ -155,6 +156,13 @@ object Settings {
 
     fun setConnectionNotificationEnabled(context: Context, enabled: Boolean) {
         prefs(context).edit().putBoolean(KEY_CONN_NOTIFICATION, enabled).apply()
+    }
+
+    fun getAdbPort(context: Context): Int =
+        prefs(context).getInt(KEY_ADB_PORT, AdbWifiController.DEFAULT_PORT)
+
+    fun setAdbPort(context: Context, port: Int) {
+        prefs(context).edit().putInt(KEY_ADB_PORT, port).apply()
     }
 
     fun isScheduleEnabled(context: Context): Boolean =

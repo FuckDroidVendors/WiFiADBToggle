@@ -6,8 +6,18 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.IBinder
+import android.os.Handler
+import android.os.Looper
 
 class QuickControlService : Service() {
+    private val connHandler = Handler(Looper.getMainLooper())
+    private val connPollRunnable = object : Runnable {
+        override fun run() {
+            NotificationHelper.notifyConnections(this@QuickControlService)
+            connHandler.postDelayed(this, CONNECTION_POLL_MS)
+        }
+    }
+
     override fun onCreate() {
         super.onCreate()
         if (Build.VERSION.SDK_INT >= 26) {
@@ -15,31 +25,61 @@ class QuickControlService : Service() {
             NotificationHelper.notifyConnections(this)
         } else {
             NotificationHelper.notifyStatus(this)
-            stopSelf()
+            if (Settings.isConnectionNotificationEnabled(this)) {
+                startConnectionPolling()
+            } else {
+                stopSelf()
+            }
         }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (!Settings.isPersistentNotificationEnabled(this)) {
             NotificationHelper.cancelStatus(this)
+            stopConnectionPolling()
             stopSelf()
             return START_NOT_STICKY
         }
         if (Build.VERSION.SDK_INT < 26) {
             NotificationHelper.notifyStatus(this)
+            if (Settings.isConnectionNotificationEnabled(this)) {
+                startConnectionPolling()
+                return START_STICKY
+            }
             stopSelf()
             return START_NOT_STICKY
+        }
+        if (Settings.isConnectionNotificationEnabled(this)) {
+            startConnectionPolling()
+        } else {
+            stopConnectionPolling()
         }
         return START_STICKY
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
 
+    override fun onDestroy() {
+        stopConnectionPolling()
+        super.onDestroy()
+    }
+
     private fun buildNotification(): Notification {
         return NotificationHelper.buildStatusNotification(this)
     }
 
+    private fun startConnectionPolling() {
+        connHandler.removeCallbacks(connPollRunnable)
+        connHandler.post(connPollRunnable)
+    }
+
+    private fun stopConnectionPolling() {
+        connHandler.removeCallbacks(connPollRunnable)
+    }
+
     companion object {
+        private const val CONNECTION_POLL_MS = 4000L
+
         fun start(context: Context) {
             if (!Settings.isPersistentNotificationEnabled(context)) return
             val intent = Intent(context, QuickControlService::class.java)

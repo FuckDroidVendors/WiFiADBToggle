@@ -43,11 +43,12 @@ class AdbTileService : TileService() {
         val enabled = AdbWifiController.isEnabled(this)
         tile.state = if (enabled) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE
         val ip = NetworkUtils.getActiveIp(this)
+        val port = Settings.getAdbPort(this)
         tile.label = getString(R.string.tile_label)
         tile.icon = Icon.createWithResource(this, R.drawable.ic_tile)
         if (android.os.Build.VERSION.SDK_INT >= 29) {
             tile.subtitle = if (ip != null) {
-                getString(R.string.ip_with_port, NetworkUtils.formatHostForPort(ip))
+                getString(R.string.ip_with_port, NetworkUtils.formatHostForPort(ip), port)
             } else {
                 getString(R.string.tile_subtitle_no_ip)
             }

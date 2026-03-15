@@ -29,9 +29,10 @@ object NotificationHelper {
 
     fun buildStatusNotification(context: Context): Notification {
         val adbEnabled = AdbWifiController.isEnabled(context)
+        val port = Settings.getAdbPort(context)
         val ip = NetworkUtils.getActiveIp(context)
         val stateLabel = if (adbEnabled) context.getString(R.string.value_on) else context.getString(R.string.value_off)
-        val ipText = ip?.let { context.getString(R.string.ip_with_port, NetworkUtils.formatHostForPort(it)) }
+        val ipText = ip?.let { context.getString(R.string.ip_with_port, NetworkUtils.formatHostForPort(it), port) }
             ?: context.getString(R.string.tile_subtitle_no_ip)
         return buildStatusNotification(context, adbEnabled, ipText, stateLabel)
     }
@@ -101,9 +102,10 @@ object NotificationHelper {
             if (!granted) return
         }
         val adbEnabled = AdbWifiController.isEnabled(context)
+        val port = Settings.getAdbPort(context)
         val ip = NetworkUtils.getActiveIp(context)
         val stateLabel = if (adbEnabled) context.getString(R.string.value_on) else context.getString(R.string.value_off)
-        val ipText = ip?.let { context.getString(R.string.ip_with_port, NetworkUtils.formatHostForPort(it)) }
+        val ipText = ip?.let { context.getString(R.string.ip_with_port, NetworkUtils.formatHostForPort(it), port) }
             ?: context.getString(R.string.tile_subtitle_no_ip)
 
         val lastState = Settings.getLastNotifState(context)
@@ -174,7 +176,8 @@ object NotificationHelper {
             return ConnectionSummary("root_required", notification)
         }
 
-        val info = AdbConnectionUtils.getActiveConnections(context)
+        val port = Settings.getAdbPort(context)
+        val info = AdbConnectionUtils.getActiveConnections(context, port)
         val hosts = info?.hosts ?: emptyList()
         val limited = hosts.take(6)
         val more = hosts.size - limited.size
@@ -205,7 +208,7 @@ object NotificationHelper {
             .setContentIntent(openPending)
             .setOnlyAlertOnce(true)
             .build()
-        val key = "${hosts.size}|${limited.joinToString(",")}|$more"
+        val key = "$port|${hosts.size}|${limited.joinToString(",")}|$more"
         return ConnectionSummary(key, notification)
     }
 

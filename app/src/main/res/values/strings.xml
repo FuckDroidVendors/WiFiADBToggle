@@ -18,7 +18,7 @@
     <string name="tile_service_label">WiFi ADB</string>
     <string name="tile_label">ADB</string>
     <string name="tile_subtitle_no_ip">no IP</string>
-    <string name="ip_with_port">%1$s:5555</string>
+    <string name="ip_with_port">%1$s:%2$d</string>
 
     <string name="toast_open_app_permission">Open app to grant root</string>
     <string name="toast_no_root_permission">Root permission required</string>
@@ -58,6 +58,8 @@
     <string name="toast_action_requires_root">Root required for ADB toggle</string>
     <string name="setting_persistent_notification">Persistent notification controls</string>
     <string name="setting_connection_notification">ADB connection notification</string>
+    <string name="setting_adb_port">ADB port</string>
+    <string name="setting_adb_port_hint">Port (1-65535)</string>
     <string name="notif_quick_title">ADB quick controls</string>
     <string name="notif_quick_text">Tap an action to control ADB</string>
     <string name="action_toggle">Toggle</string>

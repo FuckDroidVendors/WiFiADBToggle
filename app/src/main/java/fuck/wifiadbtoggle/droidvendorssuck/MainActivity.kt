@@ -37,6 +37,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mediaButtonsSwitch: Switch
     private lateinit var persistentNotificationSwitch: Switch
     private lateinit var connectionNotificationSwitch: Switch
+    private lateinit var adbPortEdit: EditText
     private lateinit var mediaPatternGroup: RadioGroup
     private lateinit var mediaPatternSingle: RadioButton
     private lateinit var mediaPatternDouble: RadioButton
@@ -75,6 +76,7 @@ class MainActivity : AppCompatActivity() {
         mediaButtonsSwitch = findViewById(R.id.settingMediaButtons)
         persistentNotificationSwitch = findViewById(R.id.settingPersistentNotification)
         connectionNotificationSwitch = findViewById(R.id.settingConnectionNotification)
+        adbPortEdit = findViewById(R.id.settingAdbPort)
         mediaPatternGroup = findViewById(R.id.settingMediaPatternGroup)
         mediaPatternSingle = findViewById(R.id.mediaPatternSingle)
         mediaPatternDouble = findViewById(R.id.mediaPatternDouble)
@@ -117,7 +119,8 @@ class MainActivity : AppCompatActivity() {
             getString(R.string.status_wifi_adb, if (enabled) on else off)
         )
         val ipText = if (ip != null) {
-            getString(R.string.ip_with_port, NetworkUtils.formatHostForPort(ip))
+            val port = Settings.getAdbPort(this)
+            getString(R.string.ip_with_port, NetworkUtils.formatHostForPort(ip), port)
         } else {
             getString(R.string.value_no_ip)
         }
@@ -139,6 +142,7 @@ class MainActivity : AppCompatActivity() {
         mediaButtonsSwitch.isChecked = Settings.isMediaButtonsEnabled(this)
         persistentNotificationSwitch.isChecked = Settings.isPersistentNotificationEnabled(this)
         connectionNotificationSwitch.isChecked = Settings.isConnectionNotificationEnabled(this)
+        adbPortEdit.setText(Settings.getAdbPort(this).toString())
         scheduleEnabledSwitch.isChecked = Settings.isScheduleEnabled(this)
         updateMediaPatternVisibility(mediaButtonsSwitch.isChecked)
 
@@ -265,6 +269,23 @@ class MainActivity : AppCompatActivity() {
                 NotificationHelper.cancelConnections(this)
             }
         }
+
+        adbPortEdit.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                val value = s?.toString()?.trim() ?: return
+                if (value.isEmpty()) return
+                val port = value.toIntOrNull() ?: return
+                if (port < 1 || port > 65535) return
+                Settings.setAdbPort(this@MainActivity, port)
+                if (AdbWifiController.isEnabled(this@MainActivity)) {
+                    AdbWifiController.applyPort(this@MainActivity, port)
+                }
+                updateStatus()
+                NotificationHelper.notifyStatus(this@MainActivity)
+            }
+        })
 
         scheduleEnabledSwitch.setOnCheckedChangeListener { _, isChecked ->
             Settings.setScheduleEnabled(this, isChecked)

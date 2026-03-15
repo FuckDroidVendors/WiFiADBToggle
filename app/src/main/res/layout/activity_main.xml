@@ -124,6 +124,21 @@
             android:layout_marginTop="4dp" />
 
         <TextView
+            android:id="@+id/settingAdbPortLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/setting_adb_port"
+            android:layout_marginTop="10dp" />
+
+        <EditText
+            android:id="@+id/settingAdbPort"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/setting_adb_port_hint"
+            android:inputType="number"
+            android:singleLine="true" />
+
+        <TextView
             android:id="@+id/settingMediaPatternLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

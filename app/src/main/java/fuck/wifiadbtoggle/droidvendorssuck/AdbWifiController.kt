@@ -3,7 +3,7 @@ package fuck.wifiadbtoggle.droidvendorssuck
 import android.content.Context
 
 object AdbWifiController {
-    private const val PORT = 5555
+    const val DEFAULT_PORT = 5555
 
     fun isEnabled(context: Context): Boolean {
         val result = ShellRunner.runPrivileged(context, "getprop service.adb.tcp.port")
@@ -23,10 +23,25 @@ object AdbWifiController {
     }
 
     fun enable(context: Context) {
-        ShellRunner.runPrivileged(context, "setprop service.adb.tcp.port $PORT; stop adbd; start adbd")
+        val port = Settings.getAdbPort(context)
+        ShellRunner.runPrivileged(context, "setprop service.adb.tcp.port $port; stop adbd; start adbd")
     }
 
     fun disable(context: Context) {
         ShellRunner.runPrivileged(context, "setprop service.adb.tcp.port -1; stop adbd; start adbd")
+    }
+
+    fun getCurrentPort(context: Context): Int? {
+        val result = ShellRunner.runPrivileged(context, "getprop service.adb.tcp.port")
+        if (!result.success) return null
+        val value = result.output.trim()
+        val port = value.toIntOrNull() ?: return null
+        if (port <= 0) return null
+        return port
+    }
+
+    fun applyPort(context: Context, port: Int) {
+        if (port <= 0) return
+        ShellRunner.runPrivileged(context, "setprop service.adb.tcp.port $port; stop adbd; start adbd")
     }
 }
