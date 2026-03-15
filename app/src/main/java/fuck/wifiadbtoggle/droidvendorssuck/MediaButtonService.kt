@@ -12,9 +12,10 @@ import android.os.IBinder
 import android.os.Looper
 import android.view.KeyEvent
 import androidx.core.app.NotificationCompat
-import androidx.media.session.MediaButtonReceiver.handleIntent
-import androidx.media.session.MediaSessionCompat
-import androidx.media.session.PlaybackStateCompat
+import android.support.v4.media.session.MediaButtonReceiver
+import android.support.v4.media.session.MediaButtonReceiver.handleIntent
+import android.support.v4.media.session.MediaSessionCompat
+import android.support.v4.media.session.PlaybackStateCompat
 
 class MediaButtonService : Service() {
     private lateinit var mediaSession: MediaSessionCompat
