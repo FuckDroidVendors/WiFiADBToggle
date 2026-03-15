@@ -246,12 +246,6 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, ScheduleActivity::class.java))
         }
 
-        if (Settings.isMediaButtonsEnabled(this)) {
-            MediaButtonService.start(this)
-        }
-        if (Settings.isPersistentNotificationEnabled(this)) {
-            QuickControlService.start(this)
-        }
     }
 
     private fun scheduleMonitorRestart() {
