@@ -131,30 +131,40 @@ object Settings {
         value.trim().lowercase()
 
     fun isMediaButtonsEnabled(context: Context): Boolean =
-        prefs(context).getBoolean(KEY_MEDIA_BUTTONS, false)
+        if (!BuildConfig.FEATURE_MEDIA) false
+        else prefs(context).getBoolean(KEY_MEDIA_BUTTONS, false)
 
     fun setMediaButtonsEnabled(context: Context, enabled: Boolean) {
+        if (!BuildConfig.FEATURE_MEDIA) return
         prefs(context).edit().putBoolean(KEY_MEDIA_BUTTONS, enabled).apply()
     }
 
     fun getMediaPattern(context: Context): MediaPattern =
-        MediaPattern.fromId(prefs(context).getString(KEY_MEDIA_PATTERN, MediaPattern.DOUBLE.id) ?: MediaPattern.DOUBLE.id)
+        if (!BuildConfig.FEATURE_MEDIA) MediaPattern.DOUBLE
+        else MediaPattern.fromId(
+            prefs(context).getString(KEY_MEDIA_PATTERN, MediaPattern.DOUBLE.id) ?: MediaPattern.DOUBLE.id
+        )
 
     fun setMediaPattern(context: Context, pattern: MediaPattern) {
+        if (!BuildConfig.FEATURE_MEDIA) return
         prefs(context).edit().putString(KEY_MEDIA_PATTERN, pattern.id).apply()
     }
 
     fun isPersistentNotificationEnabled(context: Context): Boolean =
-        prefs(context).getBoolean(KEY_PERSISTENT_NOTIFICATION, false)
+        if (!BuildConfig.FEATURE_NOTIFICATION) false
+        else prefs(context).getBoolean(KEY_PERSISTENT_NOTIFICATION, false)
 
     fun setPersistentNotificationEnabled(context: Context, enabled: Boolean) {
+        if (!BuildConfig.FEATURE_NOTIFICATION) return
         prefs(context).edit().putBoolean(KEY_PERSISTENT_NOTIFICATION, enabled).apply()
     }
 
     fun isConnectionNotificationEnabled(context: Context): Boolean =
-        prefs(context).getBoolean(KEY_CONN_NOTIFICATION, false)
+        if (!BuildConfig.FEATURE_CONNECTIONS) false
+        else prefs(context).getBoolean(KEY_CONN_NOTIFICATION, false)
 
     fun setConnectionNotificationEnabled(context: Context, enabled: Boolean) {
+        if (!BuildConfig.FEATURE_CONNECTIONS) return
         prefs(context).edit().putBoolean(KEY_CONN_NOTIFICATION, enabled).apply()
     }
 
@@ -166,9 +176,11 @@ object Settings {
     }
 
     fun isScheduleEnabled(context: Context): Boolean =
-        prefs(context).getBoolean(KEY_SCHEDULE_ENABLED, false)
+        if (!BuildConfig.FEATURE_SCHEDULE) false
+        else prefs(context).getBoolean(KEY_SCHEDULE_ENABLED, false)
 
     fun setScheduleEnabled(context: Context, enabled: Boolean) {
+        if (!BuildConfig.FEATURE_SCHEDULE) return
         prefs(context).edit().putBoolean(KEY_SCHEDULE_ENABLED, enabled).apply()
     }
 

@@ -1,0 +1,26 @@
+ext.requestedMode = project.findProperty("mode")?.toString()
+
+def noPrompt = project.findProperty("noPrompt")?.toString()?.toBoolean() == true
+
+def deviceApiProp = project.findProperty("deviceApi")?.toString()
+if (!ext.requestedMode && deviceApiProp) {
+    try {
+        def api = Integer.parseInt(deviceApiProp)
+        if (api < 24) {
+            ext.requestedMode = "notify"
+        }
+    } catch (Exception ignored) {
+    }
+}
+
+def isInteractive = System.console() != null
+if (!ext.requestedMode && !noPrompt && isInteractive) {
+    println ""
+    println "Select build mode (full, notify, notifyconn, tile, basic). Press Enter for full:"
+    def input = System.console().readLine()?.trim()
+    if (input) {
+        ext.requestedMode = input
+    } else {
+        ext.requestedMode = "full"
+    }
+}

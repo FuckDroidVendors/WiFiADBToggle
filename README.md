@@ -21,6 +21,17 @@ This requires root because it restarts `adbd` and changes system properties.
 Gradle wrapper scripts are included, but the `gradle/wrapper/gradle-wrapper.jar` file is not generated in this environment. On your machine, run `gradle wrapper` once to generate it, or let Android Studio create/update the wrapper.
 You can also run `scripts/gen-wrapper.sh` to generate the wrapper JAR if Gradle is installed.
 
+### Flavors
+Build flavors are available to reduce footprint:
+- `full`: everything.
+- `notify`: persistent notification only.
+- `notifyconn`: notification + connection list.
+- `tile`: Quick Settings tile only.
+- `basic`: tile + notification, no schedule/media.
+
+Select a flavor interactively or via `-Pmode=notify` (add `-PnoPrompt=true` to skip the prompt).
+If you pass `-PdeviceApi=23` and no mode is set, it defaults to `notify` (no tile on old Android).
+
 ## Use
 1. Launch the app once.
 2. Add the `WiFi ADB` tile to Quick Settings (Android 7.0+), or enable the persistent notification.

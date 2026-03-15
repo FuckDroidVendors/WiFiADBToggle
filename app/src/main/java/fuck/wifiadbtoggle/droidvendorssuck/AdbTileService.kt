@@ -14,11 +14,13 @@ class AdbTileService : TileService() {
 
     override fun onStartListening() {
         super.onStartListening()
+        if (!BuildConfig.FEATURE_TILE) return
         updateTile()
     }
 
     override fun onClick() {
         super.onClick()
+        if (!BuildConfig.FEATURE_TILE) return
         if (!ShellRunner.canUseRoot()) {
             ShellRunner.requestRoot(this)
             if (!ShellRunner.canUseRoot()) {
@@ -39,6 +41,7 @@ class AdbTileService : TileService() {
     }
 
     private fun updateTile() {
+        if (!BuildConfig.FEATURE_TILE) return
         val tile = qsTile ?: return
         val enabled = AdbWifiController.isEnabled(this)
         tile.state = if (enabled) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE

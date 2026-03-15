@@ -88,6 +88,38 @@ class MainActivity : AppCompatActivity() {
         scheduleEnabledSwitch = findViewById(R.id.settingScheduleEnabled)
         openScheduleButton = findViewById(R.id.openSchedule)
 
+        if (!BuildConfig.FEATURE_MONITOR) {
+            autoStartSwitch.visibility = View.GONE
+            keepAwakeSwitch.visibility = View.GONE
+            keepScreenOnSwitch.visibility = View.GONE
+            autoEnableEthernetSwitch.visibility = View.GONE
+            disableOnDisconnectSwitch.visibility = View.GONE
+            autoEnableSsidSwitch.visibility = View.GONE
+            ssidListEdit.visibility = View.GONE
+            addCurrentWifiButton.visibility = View.GONE
+            filterBssidSwitch.visibility = View.GONE
+            bssidListEdit.visibility = View.GONE
+        }
+
+        if (!BuildConfig.FEATURE_MEDIA) {
+            mediaButtonsSwitch.visibility = View.GONE
+            mediaTestButton.visibility = View.GONE
+            findViewById<TextView>(R.id.settingMediaPatternLabel).visibility = View.GONE
+            mediaPatternGroup.visibility = View.GONE
+        }
+
+        if (!BuildConfig.FEATURE_SCHEDULE) {
+            scheduleEnabledSwitch.visibility = View.GONE
+            openScheduleButton.visibility = View.GONE
+        }
+
+        if (!BuildConfig.FEATURE_NOTIFICATION) {
+            persistentNotificationSwitch.visibility = View.GONE
+            connectionNotificationSwitch.visibility = View.GONE
+        } else if (!BuildConfig.FEATURE_CONNECTIONS) {
+            connectionNotificationSwitch.visibility = View.GONE
+        }
+
         toggle.setOnClickListener {
             if (!ShellRunner.canUseRoot()) {
                 ShellRunner.requestRoot(this)
@@ -136,159 +168,197 @@ class MainActivity : AppCompatActivity() {
             getString(R.string.status_root, if (root) yes else no),
             getString(R.string.status_wifi_adb, if (enabled) on else off)
         )
-        val ipText = if (ip != null) {
-            val port = Settings.getAdbPort(this)
-            getString(R.string.ip_with_port, NetworkUtils.formatHostForPort(ip), port)
-        } else {
-            getString(R.string.value_no_ip)
+        if (BuildConfig.FEATURE_NOTIFICATION || BuildConfig.FEATURE_TILE) {
+            val ipText = if (ip != null) {
+                val port = Settings.getAdbPort(this)
+                getString(R.string.ip_with_port, NetworkUtils.formatHostForPort(ip), port)
+            } else {
+                getString(R.string.value_no_ip)
+            }
+            lines.add(getString(R.string.status_ip, ipText))
         }
-        lines.add(getString(R.string.status_ip, ipText))
         statusText.text = lines.joinToString("\n")
     }
 
     private fun bindSettings() {
-        autoStartSwitch.isChecked = Settings.isAutoStartEnabled(this)
-        keepAwakeSwitch.isChecked = Settings.isKeepAwakeEnabled(this)
-        keepScreenOnSwitch.isChecked = Settings.isKeepScreenOnEnabled(this)
-        autoEnableEthernetSwitch.isChecked = Settings.isAutoEnableEthernetEnabled(this)
-        disableOnDisconnectSwitch.isChecked = Settings.isDisableOnDisconnectEnabled(this)
-        autoEnableSsidSwitch.isChecked = Settings.isAutoEnableSsidEnabled(this)
-        filterBssidSwitch.isChecked = Settings.isFilterBssidEnabled(this)
-        ssidListEdit.setText(Settings.getSsidList(this))
-        bssidListEdit.setText(Settings.getBssidList(this))
-        applyKeepScreenOn(Settings.isKeepScreenOnEnabled(this))
-        mediaButtonsSwitch.isChecked = Settings.isMediaButtonsEnabled(this)
-        persistentNotificationSwitch.isChecked = Settings.isPersistentNotificationEnabled(this)
-        connectionNotificationSwitch.isChecked = Settings.isConnectionNotificationEnabled(this)
+        if (BuildConfig.FEATURE_MONITOR) {
+            autoStartSwitch.isChecked = Settings.isAutoStartEnabled(this)
+            keepAwakeSwitch.isChecked = Settings.isKeepAwakeEnabled(this)
+            keepScreenOnSwitch.isChecked = Settings.isKeepScreenOnEnabled(this)
+            autoEnableEthernetSwitch.isChecked = Settings.isAutoEnableEthernetEnabled(this)
+            disableOnDisconnectSwitch.isChecked = Settings.isDisableOnDisconnectEnabled(this)
+            autoEnableSsidSwitch.isChecked = Settings.isAutoEnableSsidEnabled(this)
+            filterBssidSwitch.isChecked = Settings.isFilterBssidEnabled(this)
+            ssidListEdit.setText(Settings.getSsidList(this))
+            bssidListEdit.setText(Settings.getBssidList(this))
+            applyKeepScreenOn(Settings.isKeepScreenOnEnabled(this))
+        }
+        if (BuildConfig.FEATURE_MEDIA) {
+            mediaButtonsSwitch.isChecked = Settings.isMediaButtonsEnabled(this)
+        }
+        if (BuildConfig.FEATURE_NOTIFICATION) {
+            persistentNotificationSwitch.isChecked = Settings.isPersistentNotificationEnabled(this)
+            if (BuildConfig.FEATURE_CONNECTIONS) {
+                connectionNotificationSwitch.isChecked = Settings.isConnectionNotificationEnabled(this)
+            }
+        }
         adbPortEdit.setText(Settings.getAdbPort(this).toString())
-        scheduleEnabledSwitch.isChecked = Settings.isScheduleEnabled(this)
-        updateMediaPatternVisibility(mediaButtonsSwitch.isChecked)
-
-        when (Settings.getMediaPattern(this)) {
-            MediaPattern.SINGLE -> mediaPatternSingle.isChecked = true
-            MediaPattern.DOUBLE -> mediaPatternDouble.isChecked = true
-            MediaPattern.TRIPLE -> mediaPatternTriple.isChecked = true
-            MediaPattern.LONG -> mediaPatternLong.isChecked = true
+        if (BuildConfig.FEATURE_SCHEDULE) {
+            scheduleEnabledSwitch.isChecked = Settings.isScheduleEnabled(this)
+        }
+        if (BuildConfig.FEATURE_MEDIA) {
+            updateMediaPatternVisibility(mediaButtonsSwitch.isChecked)
         }
 
-        autoStartSwitch.setOnCheckedChangeListener { _, isChecked ->
-            Settings.setAutoStartEnabled(this, isChecked)
-            if (isChecked) {
-                NetworkMonitorService.start(this)
-                if (Settings.isPersistentNotificationEnabled(this)) {
-                    QuickControlService.stop(this)
-                }
-                ToastUtils.showShort(this, getString(R.string.toast_monitor_started))
-            } else {
-                NetworkMonitorService.stop(this)
-                if (Settings.isPersistentNotificationEnabled(this)) {
-                    QuickControlService.start(this)
-                }
-                ToastUtils.showShort(this, getString(R.string.toast_monitor_stopped))
+        if (BuildConfig.FEATURE_MEDIA) {
+            when (Settings.getMediaPattern(this)) {
+                MediaPattern.SINGLE -> mediaPatternSingle.isChecked = true
+                MediaPattern.DOUBLE -> mediaPatternDouble.isChecked = true
+                MediaPattern.TRIPLE -> mediaPatternTriple.isChecked = true
+                MediaPattern.LONG -> mediaPatternLong.isChecked = true
             }
         }
 
-        keepAwakeSwitch.setOnCheckedChangeListener { _, isChecked ->
-            Settings.setKeepAwakeEnabled(this, isChecked)
-            scheduleMonitorRestart()
+        if (BuildConfig.FEATURE_MONITOR) {
+            autoStartSwitch.setOnCheckedChangeListener { _, isChecked ->
+                Settings.setAutoStartEnabled(this, isChecked)
+                if (isChecked) {
+                    NetworkMonitorService.start(this)
+                    if (BuildConfig.FEATURE_NOTIFICATION && Settings.isPersistentNotificationEnabled(this)) {
+                        QuickControlService.stop(this)
+                    }
+                    ToastUtils.showShort(this, getString(R.string.toast_monitor_started))
+                } else {
+                    NetworkMonitorService.stop(this)
+                    if (BuildConfig.FEATURE_NOTIFICATION && Settings.isPersistentNotificationEnabled(this)) {
+                        QuickControlService.start(this)
+                    }
+                    ToastUtils.showShort(this, getString(R.string.toast_monitor_stopped))
+                }
+            }
         }
 
-        keepScreenOnSwitch.setOnCheckedChangeListener { _, isChecked ->
-            Settings.setKeepScreenOnEnabled(this, isChecked)
-            applyKeepScreenOn(isChecked)
-        }
-
-        autoEnableEthernetSwitch.setOnCheckedChangeListener { _, isChecked ->
-            Settings.setAutoEnableEthernetEnabled(this, isChecked)
-            scheduleMonitorRestart()
-        }
-
-        disableOnDisconnectSwitch.setOnCheckedChangeListener { _, isChecked ->
-            Settings.setDisableOnDisconnectEnabled(this, isChecked)
-            scheduleMonitorRestart()
-        }
-
-        autoEnableSsidSwitch.setOnCheckedChangeListener { _, isChecked ->
-            Settings.setAutoEnableSsidEnabled(this, isChecked)
-            scheduleMonitorRestart()
-        }
-
-        filterBssidSwitch.setOnCheckedChangeListener { _, isChecked ->
-            Settings.setFilterBssidEnabled(this, isChecked)
-            scheduleMonitorRestart()
-        }
-
-        ssidListEdit.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-            override fun afterTextChanged(s: Editable?) {
-                Settings.setSsidList(this@MainActivity, s?.toString() ?: "")
+        if (BuildConfig.FEATURE_MONITOR) {
+            keepAwakeSwitch.setOnCheckedChangeListener { _, isChecked ->
+                Settings.setKeepAwakeEnabled(this, isChecked)
                 scheduleMonitorRestart()
             }
-        })
 
-        bssidListEdit.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-            override fun afterTextChanged(s: Editable?) {
-                Settings.setBssidList(this@MainActivity, s?.toString() ?: "")
+            keepScreenOnSwitch.setOnCheckedChangeListener { _, isChecked ->
+                Settings.setKeepScreenOnEnabled(this, isChecked)
+                applyKeepScreenOn(isChecked)
+            }
+
+            autoEnableEthernetSwitch.setOnCheckedChangeListener { _, isChecked ->
+                Settings.setAutoEnableEthernetEnabled(this, isChecked)
                 scheduleMonitorRestart()
             }
-        })
 
-        addCurrentWifiButton.setOnClickListener {
-            if (ContextCompat.checkSelfPermission(
+            disableOnDisconnectSwitch.setOnCheckedChangeListener { _, isChecked ->
+                Settings.setDisableOnDisconnectEnabled(this, isChecked)
+                scheduleMonitorRestart()
+            }
+
+            autoEnableSsidSwitch.setOnCheckedChangeListener { _, isChecked ->
+                Settings.setAutoEnableSsidEnabled(this, isChecked)
+                scheduleMonitorRestart()
+            }
+
+            filterBssidSwitch.setOnCheckedChangeListener { _, isChecked ->
+                Settings.setFilterBssidEnabled(this, isChecked)
+                scheduleMonitorRestart()
+            }
+
+            ssidListEdit.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+                override fun afterTextChanged(s: Editable?) {
+                    Settings.setSsidList(this@MainActivity, s?.toString() ?: "")
+                    scheduleMonitorRestart()
+                }
+            })
+
+            bssidListEdit.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+                override fun afterTextChanged(s: Editable?) {
+                    Settings.setBssidList(this@MainActivity, s?.toString() ?: "")
+                    scheduleMonitorRestart()
+                }
+            })
+
+            addCurrentWifiButton.setOnClickListener {
+                if (ContextCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                    ) != PackageManager.PERMISSION_GRANTED
+                ) {
+                    requestLocationPermission.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                } else {
+                    addCurrentWifi()
+                }
+            }
+        }
+
+        if (BuildConfig.FEATURE_MEDIA) {
+            mediaButtonsSwitch.setOnCheckedChangeListener { _, isChecked ->
+                Settings.setMediaButtonsEnabled(this, isChecked)
+                updateMediaPatternVisibility(isChecked)
+                if (isChecked) {
+                    MediaButtonService.start(this)
+                    ToastUtils.showShort(this, getString(R.string.toast_media_listener_started))
+                } else {
+                    MediaButtonService.stop(this)
+                    ToastUtils.showShort(this, getString(R.string.toast_media_listener_stopped))
+                }
+            }
+        }
+
+        if (BuildConfig.FEATURE_MEDIA) {
+            mediaTestButton.setOnClickListener {
+                val intent = Intent().setClassName(
                     this,
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                requestLocationPermission.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-            } else {
-                addCurrentWifi()
+                    "fuck.wifiadbtoggle.droidvendorssuck.MediaButtonTestActivity"
+                )
+                startActivity(intent)
             }
         }
 
-        mediaButtonsSwitch.setOnCheckedChangeListener { _, isChecked ->
-            Settings.setMediaButtonsEnabled(this, isChecked)
-            updateMediaPatternVisibility(isChecked)
-            if (isChecked) {
-                MediaButtonService.start(this)
-                ToastUtils.showShort(this, getString(R.string.toast_media_listener_started))
-            } else {
-                MediaButtonService.stop(this)
-                ToastUtils.showShort(this, getString(R.string.toast_media_listener_stopped))
-            }
-        }
-
-        mediaTestButton.setOnClickListener {
-            startActivity(Intent(this, MediaButtonTestActivity::class.java))
-        }
-
-        persistentNotificationSwitch.setOnCheckedChangeListener { _, isChecked ->
-            Settings.setPersistentNotificationEnabled(this, isChecked)
-            if (isChecked) {
-                if (Settings.isAutoStartEnabled(this) && Settings.isAnyMonitorRuleEnabled(this)) {
-                    NetworkMonitorService.start(this)
+        if (BuildConfig.FEATURE_NOTIFICATION) {
+            persistentNotificationSwitch.setOnCheckedChangeListener { _, isChecked ->
+                Settings.setPersistentNotificationEnabled(this, isChecked)
+                if (isChecked) {
+                    if (BuildConfig.FEATURE_MONITOR &&
+                        Settings.isAutoStartEnabled(this) &&
+                        Settings.isAnyMonitorRuleEnabled(this)
+                    ) {
+                        NetworkMonitorService.start(this)
+                        QuickControlService.stop(this)
+                    } else {
+                        QuickControlService.start(this)
+                    }
+                } else {
                     QuickControlService.stop(this)
-                } else {
-                    QuickControlService.start(this)
-                }
-            } else {
-                QuickControlService.stop(this)
-                if (Settings.isAutoStartEnabled(this) && Settings.isAnyMonitorRuleEnabled(this)) {
-                    NetworkMonitorService.start(this)
-                } else {
-                    NotificationHelper.cancelStatus(this)
+                    if (BuildConfig.FEATURE_MONITOR &&
+                        Settings.isAutoStartEnabled(this) &&
+                        Settings.isAnyMonitorRuleEnabled(this)
+                    ) {
+                        NetworkMonitorService.start(this)
+                    } else {
+                        NotificationHelper.cancelStatus(this)
+                    }
                 }
             }
         }
 
-        connectionNotificationSwitch.setOnCheckedChangeListener { _, isChecked ->
-            Settings.setConnectionNotificationEnabled(this, isChecked)
-            if (isChecked) {
-                NotificationHelper.notifyConnections(this)
-            } else {
-                NotificationHelper.cancelConnections(this)
+        if (BuildConfig.FEATURE_NOTIFICATION && BuildConfig.FEATURE_CONNECTIONS) {
+            connectionNotificationSwitch.setOnCheckedChangeListener { _, isChecked ->
+                Settings.setConnectionNotificationEnabled(this, isChecked)
+                if (isChecked) {
+                    NotificationHelper.notifyConnections(this)
+                } else {
+                    NotificationHelper.cancelConnections(this)
+                }
             }
         }
 
@@ -309,32 +379,43 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        scheduleEnabledSwitch.setOnCheckedChangeListener { _, isChecked ->
-            Settings.setScheduleEnabled(this, isChecked)
-            if (isChecked) {
-                ScheduleManager.applyScheduleNow(this)
+        if (BuildConfig.FEATURE_SCHEDULE) {
+            scheduleEnabledSwitch.setOnCheckedChangeListener { _, isChecked ->
+                Settings.setScheduleEnabled(this, isChecked)
+                if (isChecked) {
+                    ScheduleManager.applyScheduleNow(this)
+                }
+                ScheduleAlarmScheduler.scheduleNext(this)
             }
-            ScheduleAlarmScheduler.scheduleNext(this)
         }
 
-        mediaPatternGroup.setOnCheckedChangeListener { _, checkedId ->
-            val pattern = when (checkedId) {
-                R.id.mediaPatternSingle -> MediaPattern.SINGLE
-                R.id.mediaPatternDouble -> MediaPattern.DOUBLE
-                R.id.mediaPatternTriple -> MediaPattern.TRIPLE
-                R.id.mediaPatternLong -> MediaPattern.LONG
-                else -> MediaPattern.DOUBLE
+        if (BuildConfig.FEATURE_MEDIA) {
+            mediaPatternGroup.setOnCheckedChangeListener { _, checkedId ->
+                val pattern = when (checkedId) {
+                    R.id.mediaPatternSingle -> MediaPattern.SINGLE
+                    R.id.mediaPatternDouble -> MediaPattern.DOUBLE
+                    R.id.mediaPatternTriple -> MediaPattern.TRIPLE
+                    R.id.mediaPatternLong -> MediaPattern.LONG
+                    else -> MediaPattern.DOUBLE
+                }
+                Settings.setMediaPattern(this, pattern)
             }
-            Settings.setMediaPattern(this, pattern)
         }
 
-        openScheduleButton.setOnClickListener {
-            startActivity(Intent(this, ScheduleActivity::class.java))
+        if (BuildConfig.FEATURE_SCHEDULE) {
+            openScheduleButton.setOnClickListener {
+                val intent = Intent().setClassName(
+                    this,
+                    "fuck.wifiadbtoggle.droidvendorssuck.ScheduleActivity"
+                )
+                startActivity(intent)
+            }
         }
 
     }
 
     private fun scheduleMonitorRestart() {
+        if (!BuildConfig.FEATURE_MONITOR) return
         monitorHandler.removeCallbacks(monitorRestartRunnable)
         if (!Settings.isAutoStartEnabled(this) || !Settings.isAnyMonitorRuleEnabled(this)) {
             NetworkMonitorService.stop(this)
@@ -344,12 +425,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateMediaPatternVisibility(enabled: Boolean) {
+        if (!BuildConfig.FEATURE_MEDIA) return
         val visibility = if (enabled) View.VISIBLE else View.GONE
         findViewById<TextView>(R.id.settingMediaPatternLabel).visibility = visibility
         mediaPatternGroup.visibility = visibility
     }
 
     private fun addCurrentWifi() {
+        if (!BuildConfig.FEATURE_MONITOR) return
         val info = getCurrentWifiInfo()
         if (info == null) {
             ToastUtils.showShort(this, getString(R.string.toast_wifi_info_unavailable))

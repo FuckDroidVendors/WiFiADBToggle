@@ -36,11 +36,13 @@
 
         <activity
             android:name=".ScheduleActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:enabled="${enableSchedule}" />
 
         <activity
             android:name=".MediaButtonTestActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:enabled="${enableMedia}" />
 
         <activity
             android:name=".ShortcutActivity"
@@ -62,6 +64,7 @@
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
             android:settingsActivity=".MainActivity"
             android:exported="true"
+            android:enabled="${enableTile}"
             tools:targetApi="24">
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
@@ -74,16 +77,19 @@
         <service
             android:name=".NetworkMonitorService"
             android:exported="false"
+            android:enabled="${enableMonitor}"
             android:foregroundServiceType="dataSync" />
 
         <service
             android:name=".MediaButtonService"
             android:exported="false"
+            android:enabled="${enableMedia}"
             android:foregroundServiceType="mediaPlayback" />
 
         <service
             android:name=".QuickControlService"
             android:exported="false"
+            android:enabled="${enableQuickControl}"
             android:foregroundServiceType="dataSync" />
 
         <receiver
@@ -96,7 +102,8 @@
 
         <receiver
             android:name=".ScheduleAlarmReceiver"
-            android:exported="false" />
+            android:exported="false"
+            android:enabled="${enableSchedule}" />
 
     </application>
 </manifest>

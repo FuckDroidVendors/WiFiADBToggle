@@ -185,6 +185,7 @@ class NetworkMonitorService : Service() {
 
     companion object {
         fun start(context: Context) {
+            if (!BuildConfig.FEATURE_MONITOR) return
             if (!Settings.isAutoStartEnabled(context) || !Settings.isAnyMonitorRuleEnabled(context)) {
                 return
             }

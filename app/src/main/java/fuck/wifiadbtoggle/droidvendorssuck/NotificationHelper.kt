@@ -94,6 +94,7 @@ object NotificationHelper {
     }
 
     fun notifyStatus(context: Context) {
+        if (!BuildConfig.FEATURE_NOTIFICATION) return
         if (Build.VERSION.SDK_INT >= 33) {
             val granted = ContextCompat.checkSelfPermission(
                 context,
@@ -129,6 +130,7 @@ object NotificationHelper {
     }
 
     fun notifyConnections(context: Context) {
+        if (!BuildConfig.FEATURE_CONNECTIONS || !BuildConfig.FEATURE_NOTIFICATION) return
         if (!Settings.isConnectionNotificationEnabled(context)) {
             cancelConnections(context)
             return

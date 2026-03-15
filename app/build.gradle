@@ -3,6 +3,8 @@ plugins {
     id 'org.jetbrains.kotlin.android'
 }
 
+apply from: "${rootDir}/build-logic/select-mode.gradle"
+
 android {
     namespace = 'fuck.wifiadbtoggle.droidvendorssuck'
     compileSdk = 36
@@ -35,6 +37,94 @@ android {
         }
     }
 
+    buildFeatures {
+        buildConfig true
+    }
+
+    flavorDimensions "mode"
+    productFlavors {
+        full {
+            dimension "mode"
+            buildConfigField "boolean", "FEATURE_NOTIFICATION", "true"
+            buildConfigField "boolean", "FEATURE_CONNECTIONS", "true"
+            buildConfigField "boolean", "FEATURE_TILE", "true"
+            buildConfigField "boolean", "FEATURE_MEDIA", "true"
+            buildConfigField "boolean", "FEATURE_SCHEDULE", "true"
+            buildConfigField "boolean", "FEATURE_MONITOR", "true"
+            manifestPlaceholders = [
+                enableTile: "true",
+                enableMedia: "true",
+                enableSchedule: "true",
+                enableQuickControl: "true",
+                enableMonitor: "true"
+            ]
+        }
+        notify {
+            dimension "mode"
+            buildConfigField "boolean", "FEATURE_NOTIFICATION", "true"
+            buildConfigField "boolean", "FEATURE_CONNECTIONS", "false"
+            buildConfigField "boolean", "FEATURE_TILE", "false"
+            buildConfigField "boolean", "FEATURE_MEDIA", "false"
+            buildConfigField "boolean", "FEATURE_SCHEDULE", "false"
+            buildConfigField "boolean", "FEATURE_MONITOR", "false"
+            manifestPlaceholders = [
+                enableTile: "false",
+                enableMedia: "false",
+                enableSchedule: "false",
+                enableQuickControl: "true",
+                enableMonitor: "false"
+            ]
+        }
+        notifyconn {
+            dimension "mode"
+            buildConfigField "boolean", "FEATURE_NOTIFICATION", "true"
+            buildConfigField "boolean", "FEATURE_CONNECTIONS", "true"
+            buildConfigField "boolean", "FEATURE_TILE", "false"
+            buildConfigField "boolean", "FEATURE_MEDIA", "false"
+            buildConfigField "boolean", "FEATURE_SCHEDULE", "false"
+            buildConfigField "boolean", "FEATURE_MONITOR", "false"
+            manifestPlaceholders = [
+                enableTile: "false",
+                enableMedia: "false",
+                enableSchedule: "false",
+                enableQuickControl: "true",
+                enableMonitor: "false"
+            ]
+        }
+        tile {
+            dimension "mode"
+            buildConfigField "boolean", "FEATURE_NOTIFICATION", "false"
+            buildConfigField "boolean", "FEATURE_CONNECTIONS", "false"
+            buildConfigField "boolean", "FEATURE_TILE", "true"
+            buildConfigField "boolean", "FEATURE_MEDIA", "false"
+            buildConfigField "boolean", "FEATURE_SCHEDULE", "false"
+            buildConfigField "boolean", "FEATURE_MONITOR", "false"
+            manifestPlaceholders = [
+                enableTile: "true",
+                enableMedia: "false",
+                enableSchedule: "false",
+                enableQuickControl: "false",
+                enableMonitor: "false"
+            ]
+        }
+        basic {
+            dimension "mode"
+            buildConfigField "boolean", "FEATURE_NOTIFICATION", "true"
+            buildConfigField "boolean", "FEATURE_CONNECTIONS", "false"
+            buildConfigField "boolean", "FEATURE_TILE", "true"
+            buildConfigField "boolean", "FEATURE_MEDIA", "false"
+            buildConfigField "boolean", "FEATURE_SCHEDULE", "false"
+            buildConfigField "boolean", "FEATURE_MONITOR", "true"
+            manifestPlaceholders = [
+                enableTile: "true",
+                enableMedia: "false",
+                enableSchedule: "false",
+                enableQuickControl: "true",
+                enableMonitor: "true"
+            ]
+        }
+    }
+
     splits {
         abi {
             enable true
@@ -54,6 +144,11 @@ android {
 }
 
 androidComponents {
+    beforeVariants(selector().all()) { variantBuilder ->
+        if (requestedMode && variantBuilder.flavorName && variantBuilder.flavorName != requestedMode) {
+            variantBuilder.enable = false
+        }
+    }
     onVariants(selector().all()) { variant ->
         def variantName = variant.name
         def capitalized = variantName.capitalize()
@@ -76,7 +171,6 @@ androidComponents {
 dependencies {
     implementation "androidx.core:core-ktx:1.12.0"
     implementation "androidx.appcompat:appcompat:1.6.1"
-    implementation "com.google.android.material:material:1.11.0"
-    implementation "androidx.recyclerview:recyclerview:1.3.2"
-    implementation "androidx.media:media:1.2.1"
+    fullImplementation "androidx.recyclerview:recyclerview:1.3.2"
+    fullImplementation "androidx.media:media:1.2.1"
 }

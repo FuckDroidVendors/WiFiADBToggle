@@ -20,6 +20,10 @@ class QuickControlService : Service() {
 
     override fun onCreate() {
         super.onCreate()
+        if (!BuildConfig.FEATURE_NOTIFICATION) {
+            stopSelf()
+            return
+        }
         if (Build.VERSION.SDK_INT >= 26) {
             startForeground(NotificationHelper.STATUS_NOTIF_ID, buildNotification())
             NotificationHelper.notifyConnections(this)
@@ -34,6 +38,10 @@ class QuickControlService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (!BuildConfig.FEATURE_NOTIFICATION) {
+            stopSelf()
+            return START_NOT_STICKY
+        }
         if (!Settings.isPersistentNotificationEnabled(this)) {
             NotificationHelper.cancelStatus(this)
             stopConnectionPolling()
@@ -49,7 +57,7 @@ class QuickControlService : Service() {
             stopSelf()
             return START_NOT_STICKY
         }
-        if (Settings.isConnectionNotificationEnabled(this)) {
+        if (BuildConfig.FEATURE_CONNECTIONS && Settings.isConnectionNotificationEnabled(this)) {
             startConnectionPolling()
         } else {
             stopConnectionPolling()
@@ -81,6 +89,7 @@ class QuickControlService : Service() {
         private const val CONNECTION_POLL_MS = 4000L
 
         fun start(context: Context) {
+            if (!BuildConfig.FEATURE_NOTIFICATION) return
             if (!Settings.isPersistentNotificationEnabled(context)) return
             val intent = Intent(context, QuickControlService::class.java)
             if (Build.VERSION.SDK_INT >= 26) {
