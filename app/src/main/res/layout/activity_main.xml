@@ -153,6 +153,13 @@
                 android:text="@string/media_pattern_long" />
         </RadioGroup>
 
+        <Switch
+            android:id="@+id/settingScheduleEnabled"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/setting_schedule_enabled"
+            android:layout_marginTop="10dp" />
+
         <Button
             android:id="@+id/openSchedule"
             android:layout_width="match_parent"

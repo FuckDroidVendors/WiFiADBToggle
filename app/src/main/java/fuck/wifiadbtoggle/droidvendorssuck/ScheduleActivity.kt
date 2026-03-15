@@ -56,6 +56,7 @@ class ScheduleActivity : AppCompatActivity() {
 
         selectedDayMillis = calendarView.date
         loadForSelectedDay()
+
     }
 
     private fun loadForSelectedDay() {

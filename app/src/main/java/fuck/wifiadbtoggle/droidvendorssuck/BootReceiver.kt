@@ -16,6 +16,8 @@ class BootReceiver : BroadcastReceiver() {
         if (Settings.isPersistentNotificationEnabled(context)) {
             QuickControlService.start(context)
         }
-        ScheduleAlarmScheduler.scheduleNext(context)
+        if (Settings.isScheduleEnabled(context)) {
+            ScheduleAlarmScheduler.scheduleNext(context)
+        }
     }
 }

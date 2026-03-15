@@ -17,7 +17,7 @@ object ScheduleAlarmScheduler {
             pendingFlags()
         )
 
-        if (!ScheduleDbHelper(context).hasAnyEnabled()) {
+        if (!Settings.isScheduleEnabled(context) || !ScheduleDbHelper(context).hasAnyEnabled()) {
             alarmManager.cancel(pending)
             return
         }

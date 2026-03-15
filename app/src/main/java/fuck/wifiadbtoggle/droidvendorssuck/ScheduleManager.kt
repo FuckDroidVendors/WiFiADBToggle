@@ -5,6 +5,7 @@ import java.util.Calendar
 
 object ScheduleManager {
     fun getActiveMode(context: Context, now: Long = System.currentTimeMillis()): ScheduleMode? {
+        if (!Settings.isScheduleEnabled(context)) return null
         val entries = ScheduleDbHelper(context).listAll().filter { it.enabled && it.startMillis <= now && it.endMillis > now }
         if (entries.isEmpty()) return null
         // Priority: FORCE_OFF > FORCE_ON > RESPECT

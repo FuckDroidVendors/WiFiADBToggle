@@ -16,6 +16,7 @@ object Settings {
     private const val KEY_MEDIA_BUTTONS = "media_buttons"
     private const val KEY_MEDIA_PATTERN = "media_pattern"
     private const val KEY_PERSISTENT_NOTIFICATION = "persistent_notification"
+    private const val KEY_SCHEDULE_ENABLED = "schedule_enabled"
 
     private fun prefs(context: Context) =
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
@@ -143,6 +144,13 @@ object Settings {
 
     fun setPersistentNotificationEnabled(context: Context, enabled: Boolean) {
         prefs(context).edit().putBoolean(KEY_PERSISTENT_NOTIFICATION, enabled).apply()
+    }
+
+    fun isScheduleEnabled(context: Context): Boolean =
+        prefs(context).getBoolean(KEY_SCHEDULE_ENABLED, false)
+
+    fun setScheduleEnabled(context: Context, enabled: Boolean) {
+        prefs(context).edit().putBoolean(KEY_SCHEDULE_ENABLED, enabled).apply()
     }
 }
 

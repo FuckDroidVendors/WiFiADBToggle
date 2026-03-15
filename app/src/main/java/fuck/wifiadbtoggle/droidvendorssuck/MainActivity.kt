@@ -41,6 +41,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mediaPatternDouble: RadioButton
     private lateinit var mediaPatternTriple: RadioButton
     private lateinit var mediaPatternLong: RadioButton
+    private lateinit var scheduleEnabledSwitch: Switch
     private lateinit var openScheduleButton: Button
     private val monitorHandler = Handler(Looper.getMainLooper())
     private val monitorRestartRunnable = Runnable { NetworkMonitorService.start(this) }
@@ -77,6 +78,7 @@ class MainActivity : AppCompatActivity() {
         mediaPatternDouble = findViewById(R.id.mediaPatternDouble)
         mediaPatternTriple = findViewById(R.id.mediaPatternTriple)
         mediaPatternLong = findViewById(R.id.mediaPatternLong)
+        scheduleEnabledSwitch = findViewById(R.id.settingScheduleEnabled)
         openScheduleButton = findViewById(R.id.openSchedule)
 
         toggle.setOnClickListener {
@@ -130,6 +132,7 @@ class MainActivity : AppCompatActivity() {
         applyKeepScreenOn(Settings.isKeepScreenOnEnabled(this))
         mediaButtonsSwitch.isChecked = Settings.isMediaButtonsEnabled(this)
         persistentNotificationSwitch.isChecked = Settings.isPersistentNotificationEnabled(this)
+        scheduleEnabledSwitch.isChecked = Settings.isScheduleEnabled(this)
         updateMediaPatternVisibility(mediaButtonsSwitch.isChecked)
 
         when (Settings.getMediaPattern(this)) {
@@ -229,6 +232,14 @@ class MainActivity : AppCompatActivity() {
             } else {
                 QuickControlService.stop(this)
             }
+        }
+
+        scheduleEnabledSwitch.setOnCheckedChangeListener { _, isChecked ->
+            Settings.setScheduleEnabled(this, isChecked)
+            if (isChecked) {
+                ScheduleManager.applyScheduleNow(this)
+            }
+            ScheduleAlarmScheduler.scheduleNext(this)
         }
 
         mediaPatternGroup.setOnCheckedChangeListener { _, checkedId ->
