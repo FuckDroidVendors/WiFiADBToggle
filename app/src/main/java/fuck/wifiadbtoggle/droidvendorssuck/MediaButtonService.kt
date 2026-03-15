@@ -12,8 +12,6 @@ import android.os.IBinder
 import android.os.Looper
 import android.view.KeyEvent
 import androidx.core.app.NotificationCompat
-import android.support.v4.media.session.MediaButtonReceiver
-import android.support.v4.media.session.MediaButtonReceiver.handleIntent
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 
@@ -63,7 +61,10 @@ class MediaButtonService : Service() {
             stopSelf()
             return START_NOT_STICKY
         }
-        handleIntent(mediaSession, intent)
+        val event = intent?.getParcelableExtra<KeyEvent>(Intent.EXTRA_KEY_EVENT)
+        if (event != null) {
+            handleKeyEvent(event)
+        }
         return START_STICKY
     }
 
