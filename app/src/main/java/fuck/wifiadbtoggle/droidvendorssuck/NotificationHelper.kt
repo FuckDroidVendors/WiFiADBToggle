@@ -25,12 +25,21 @@ object NotificationHelper {
     }
 
     fun buildStatusNotification(context: Context): Notification {
-        ensureChannel(context)
         val adbEnabled = AdbWifiController.isEnabled(context)
         val ip = NetworkUtils.getActiveIpv4(context)
         val stateLabel = if (adbEnabled) context.getString(R.string.value_on) else context.getString(R.string.value_off)
         val ipText = ip?.let { context.getString(R.string.ip_with_port, it) }
             ?: context.getString(R.string.tile_subtitle_no_ip)
+        return buildStatusNotification(context, adbEnabled, ipText, stateLabel)
+    }
+
+    fun buildStatusNotification(
+        context: Context,
+        adbEnabled: Boolean,
+        ipText: String,
+        stateLabel: String
+    ): Notification {
+        ensureChannel(context)
         val actionLabel = if (adbEnabled) {
             context.getString(R.string.action_turn_off)
         } else {
@@ -79,13 +88,28 @@ object NotificationHelper {
     }
 
     fun notifyStatus(context: Context) {
+        val adbEnabled = AdbWifiController.isEnabled(context)
+        val ip = NetworkUtils.getActiveIpv4(context)
+        val stateLabel = if (adbEnabled) context.getString(R.string.value_on) else context.getString(R.string.value_off)
+        val ipText = ip?.let { context.getString(R.string.ip_with_port, it) }
+            ?: context.getString(R.string.tile_subtitle_no_ip)
+
+        val lastState = Settings.getLastNotifState(context)
+        val lastIp = Settings.getLastNotifIp(context)
+        if (lastState != null && lastIp != null && lastState == stateLabel && lastIp == ipText) {
+            return
+        }
+        Settings.setLastNotifState(context, stateLabel)
+        Settings.setLastNotifIp(context, ipText)
+
         val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        manager.notify(STATUS_NOTIF_ID, buildStatusNotification(context))
+        manager.notify(STATUS_NOTIF_ID, buildStatusNotification(context, adbEnabled, ipText, stateLabel))
     }
 
     fun cancelStatus(context: Context) {
         val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         manager.cancel(STATUS_NOTIF_ID)
+        Settings.clearLastNotif(context)
     }
 
     private fun ensureChannel(context: Context) {

@@ -17,6 +17,8 @@ object Settings {
     private const val KEY_MEDIA_PATTERN = "media_pattern"
     private const val KEY_PERSISTENT_NOTIFICATION = "persistent_notification"
     private const val KEY_SCHEDULE_ENABLED = "schedule_enabled"
+    private const val KEY_LAST_NOTIF_STATE = "last_notif_state"
+    private const val KEY_LAST_NOTIF_IP = "last_notif_ip"
 
     private fun prefs(context: Context) =
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
@@ -151,6 +153,27 @@ object Settings {
 
     fun setScheduleEnabled(context: Context, enabled: Boolean) {
         prefs(context).edit().putBoolean(KEY_SCHEDULE_ENABLED, enabled).apply()
+    }
+
+    fun getLastNotifState(context: Context): String? =
+        prefs(context).getString(KEY_LAST_NOTIF_STATE, null)
+
+    fun setLastNotifState(context: Context, value: String?) {
+        prefs(context).edit().putString(KEY_LAST_NOTIF_STATE, value).apply()
+    }
+
+    fun getLastNotifIp(context: Context): String? =
+        prefs(context).getString(KEY_LAST_NOTIF_IP, null)
+
+    fun setLastNotifIp(context: Context, value: String?) {
+        prefs(context).edit().putString(KEY_LAST_NOTIF_IP, value).apply()
+    }
+
+    fun clearLastNotif(context: Context) {
+        prefs(context).edit()
+            .remove(KEY_LAST_NOTIF_STATE)
+            .remove(KEY_LAST_NOTIF_IP)
+            .apply()
     }
 }
 
