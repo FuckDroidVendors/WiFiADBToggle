@@ -146,9 +146,15 @@ class MainActivity : AppCompatActivity() {
             Settings.setAutoStartEnabled(this, isChecked)
             if (isChecked) {
                 NetworkMonitorService.start(this)
+                if (Settings.isPersistentNotificationEnabled(this)) {
+                    QuickControlService.stop(this)
+                }
                 ToastUtils.showShort(this, getString(R.string.toast_monitor_started))
             } else {
                 NetworkMonitorService.stop(this)
+                if (Settings.isPersistentNotificationEnabled(this)) {
+                    QuickControlService.start(this)
+                }
                 ToastUtils.showShort(this, getString(R.string.toast_monitor_stopped))
             }
         }
@@ -228,9 +234,19 @@ class MainActivity : AppCompatActivity() {
         persistentNotificationSwitch.setOnCheckedChangeListener { _, isChecked ->
             Settings.setPersistentNotificationEnabled(this, isChecked)
             if (isChecked) {
-                QuickControlService.start(this)
+                if (Settings.isAutoStartEnabled(this) && Settings.isAnyMonitorRuleEnabled(this)) {
+                    NetworkMonitorService.start(this)
+                    QuickControlService.stop(this)
+                } else {
+                    QuickControlService.start(this)
+                }
             } else {
                 QuickControlService.stop(this)
+                if (Settings.isAutoStartEnabled(this) && Settings.isAnyMonitorRuleEnabled(this)) {
+                    NetworkMonitorService.start(this)
+                } else {
+                    NotificationHelper.cancelStatus(this)
+                }
             }
         }
 

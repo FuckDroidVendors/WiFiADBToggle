@@ -28,6 +28,7 @@ class ShortcutActivity : Activity() {
         }
         AdbWifiController.toggle(this)
         ScheduleManager.applyScheduleNow(this)
+        NotificationHelper.notifyStatus(this)
     }
 
     private fun performEnable() {
@@ -40,6 +41,7 @@ class ShortcutActivity : Activity() {
         }
         AdbWifiController.enable(this)
         ScheduleManager.applyScheduleNow(this)
+        NotificationHelper.notifyStatus(this)
     }
 
     private fun performDisable() {
@@ -52,6 +54,7 @@ class ShortcutActivity : Activity() {
         }
         AdbWifiController.disable(this)
         ScheduleManager.applyScheduleNow(this)
+        NotificationHelper.notifyStatus(this)
     }
 
     private fun openSettings() {

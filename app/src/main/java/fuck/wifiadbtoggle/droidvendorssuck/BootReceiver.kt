@@ -13,7 +13,9 @@ class BootReceiver : BroadcastReceiver() {
         if (Settings.isMediaButtonsEnabled(context)) {
             MediaButtonService.start(context)
         }
-        if (Settings.isPersistentNotificationEnabled(context)) {
+        if (Settings.isPersistentNotificationEnabled(context) &&
+            !(Settings.isAutoStartEnabled(context) && Settings.isAnyMonitorRuleEnabled(context))
+        ) {
             QuickControlService.start(context)
         }
         if (Settings.isScheduleEnabled(context)) {

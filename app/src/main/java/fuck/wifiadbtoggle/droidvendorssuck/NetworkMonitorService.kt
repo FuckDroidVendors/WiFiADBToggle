@@ -1,8 +1,6 @@
 package fuck.wifiadbtoggle.droidvendorssuck
 
 import android.app.Notification
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.app.Service
 import android.content.Context
 import android.content.Intent
@@ -11,7 +9,6 @@ import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.IBinder
 import android.os.PowerManager
-import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import java.util.concurrent.Executors
 
@@ -31,7 +28,7 @@ class NetworkMonitorService : Service() {
     override fun onCreate() {
         super.onCreate()
         connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        startForeground(NOTIF_ID, buildNotification())
+        startForeground(NotificationHelper.STATUS_NOTIF_ID, buildNotification())
         registerCallback()
         updateWakeLock()
         scheduleEvaluate()
@@ -42,6 +39,7 @@ class NetworkMonitorService : Service() {
             stopSelf()
             return START_NOT_STICKY
         }
+        startForeground(NotificationHelper.STATUS_NOTIF_ID, buildNotification())
         updateWakeLock()
         scheduleEvaluate()
         return START_STICKY
@@ -82,61 +80,65 @@ class NetworkMonitorService : Service() {
     }
 
     private fun evaluateAndApply() {
-        if (!Settings.isAutoStartEnabled(this) || !Settings.isAnyMonitorRuleEnabled(this)) {
-            stopSelf()
-            return
-        }
-        if (!ShellRunner.canUseRoot()) return
-        val scheduleMode = ScheduleManager.getActiveMode(this)
-        if (scheduleMode == ScheduleMode.FORCE_ON) {
-            if (!AdbWifiController.isEnabled(this)) {
-                AdbWifiController.enable(this)
+        try {
+            if (!Settings.isAutoStartEnabled(this) || !Settings.isAnyMonitorRuleEnabled(this)) {
+                stopSelf()
+                return
             }
-            return
-        }
-        if (scheduleMode == ScheduleMode.FORCE_OFF) {
-            if (AdbWifiController.isEnabled(this)) {
-                AdbWifiController.disable(this)
+            if (!ShellRunner.canUseRoot()) return
+            val scheduleMode = ScheduleManager.getActiveMode(this)
+            if (scheduleMode == ScheduleMode.FORCE_ON) {
+                if (!AdbWifiController.isEnabled(this)) {
+                    AdbWifiController.enable(this)
+                }
+                return
             }
-            return
-        }
-
-        val info = connectivityManager.activeNetworkInfo
-        val isConnected = info?.isConnected == true
-        val onWifi = isConnected && info?.type == ConnectivityManager.TYPE_WIFI
-        val onEthernet = isConnected && info?.type == ConnectivityManager.TYPE_ETHERNET
-
-        if (!onWifi && !onEthernet) {
-            if (Settings.isDisableOnDisconnectEnabled(this)) {
+            if (scheduleMode == ScheduleMode.FORCE_OFF) {
                 if (AdbWifiController.isEnabled(this)) {
                     AdbWifiController.disable(this)
                 }
+                return
             }
-            return
-        }
 
-        if (onEthernet && Settings.isAutoEnableEthernetEnabled(this)) {
-            if (!AdbWifiController.isEnabled(this)) {
-                AdbWifiController.enable(this)
-            }
-            return
-        }
+            val info = connectivityManager.activeNetworkInfo
+            val isConnected = info?.isConnected == true
+            val onWifi = isConnected && info?.type == ConnectivityManager.TYPE_WIFI
+            val onEthernet = isConnected && info?.type == ConnectivityManager.TYPE_ETHERNET
 
-        if (onWifi && Settings.isAutoEnableSsidEnabled(this)) {
-            val wifiInfo = getWifiInfo()
-            val ssid = wifiInfo?.first
-            val bssid = wifiInfo?.second
-            if (ssid == null) return
-            val allowedSsids = Settings.getSsidSet(this)
-            if (allowedSsids.isNotEmpty() && !allowedSsids.contains(Settings.normalizeSsid(ssid))) return
-            if (Settings.isFilterBssidEnabled(this)) {
-                if (bssid == null) return
-                val allowedBssids = Settings.getBssidSet(this)
-                if (allowedBssids.isNotEmpty() && !allowedBssids.contains(Settings.normalizeBssid(bssid))) return
+            if (!onWifi && !onEthernet) {
+                if (Settings.isDisableOnDisconnectEnabled(this)) {
+                    if (AdbWifiController.isEnabled(this)) {
+                        AdbWifiController.disable(this)
+                    }
+                }
+                return
             }
-            if (!AdbWifiController.isEnabled(this)) {
-                AdbWifiController.enable(this)
+
+            if (onEthernet && Settings.isAutoEnableEthernetEnabled(this)) {
+                if (!AdbWifiController.isEnabled(this)) {
+                    AdbWifiController.enable(this)
+                }
+                return
             }
+
+            if (onWifi && Settings.isAutoEnableSsidEnabled(this)) {
+                val wifiInfo = getWifiInfo()
+                val ssid = wifiInfo?.first
+                val bssid = wifiInfo?.second
+                if (ssid == null) return
+                val allowedSsids = Settings.getSsidSet(this)
+                if (allowedSsids.isNotEmpty() && !allowedSsids.contains(Settings.normalizeSsid(ssid))) return
+                if (Settings.isFilterBssidEnabled(this)) {
+                    if (bssid == null) return
+                    val allowedBssids = Settings.getBssidSet(this)
+                    if (allowedBssids.isNotEmpty() && !allowedBssids.contains(Settings.normalizeBssid(bssid))) return
+                }
+                if (!AdbWifiController.isEnabled(this)) {
+                    AdbWifiController.enable(this)
+                }
+            }
+        } finally {
+            updateStatusNotification()
         }
     }
 
@@ -174,29 +176,14 @@ class NetworkMonitorService : Service() {
     }
 
     private fun buildNotification(): Notification {
-        val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        if (Build.VERSION.SDK_INT >= 26) {
-            val channel = NotificationChannel(
-                NOTIF_CHANNEL_ID,
-                getString(R.string.notif_channel_name),
-                NotificationManager.IMPORTANCE_LOW
-            ).apply {
-                description = getString(R.string.notif_channel_desc)
-            }
-            manager.createNotificationChannel(channel)
+        return if (Settings.isPersistentNotificationEnabled(this)) {
+            NotificationHelper.buildStatusNotification(this)
+        } else {
+            NotificationHelper.buildMonitorNotification(this)
         }
-        return NotificationCompat.Builder(this, NOTIF_CHANNEL_ID)
-            .setContentTitle(getString(R.string.notif_title))
-            .setContentText(getString(R.string.notif_text))
-            .setSmallIcon(R.drawable.ic_tile)
-            .setOngoing(true)
-            .build()
     }
 
     companion object {
-        private const val NOTIF_CHANNEL_ID = "adb_monitor"
-        private const val NOTIF_ID = 1001
-
         fun start(context: Context) {
             if (!Settings.isAutoStartEnabled(context) || !Settings.isAnyMonitorRuleEnabled(context)) {
                 return
@@ -213,5 +200,10 @@ class NetworkMonitorService : Service() {
             val intent = Intent(context, NetworkMonitorService::class.java)
             context.stopService(intent)
         }
+    }
+
+    private fun updateStatusNotification() {
+        if (!Settings.isPersistentNotificationEnabled(this)) return
+        NotificationHelper.notifyStatus(this)
     }
 }
