@@ -267,9 +267,6 @@ dependencies {
     def kotlinVersion = rootProject.ext.kotlin_version
     fullImplementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
     full21Implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
-    basicImplementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
-    tileImplementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
-    notifyconnImplementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
     fullImplementation "androidx.recyclerview:recyclerview:1.3.2"
     fullImplementation "androidx.media:media:1.2.1"
     full21Implementation "androidx.recyclerview:recyclerview:1.3.2"
