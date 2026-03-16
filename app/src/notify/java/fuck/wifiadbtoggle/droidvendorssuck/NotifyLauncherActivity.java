@@ -8,7 +8,7 @@ public class NotifyLauncherActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        QuickControlService.start(this);
+        NotificationHelper.notifyStatus(this);
         if (Build.VERSION.SDK_INT >= 21) {
             finishAndRemoveTask();
         } else {

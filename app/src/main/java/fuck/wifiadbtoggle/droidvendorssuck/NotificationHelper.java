@@ -26,7 +26,7 @@ public final class NotificationHelper {
         return builder
             .setContentTitle(context.getString(R.string.notif_title))
             .setContentText(context.getString(R.string.notif_text))
-            .setSmallIcon(R.drawable.ic_tile)
+            .setSmallIcon(R.drawable.ic_launcher)
             .setOngoing(true)
             .build();
     }
@@ -34,7 +34,7 @@ public final class NotificationHelper {
     public static Notification buildStatusNotification(Context context) {
         boolean adbEnabled = AdbWifiController.isEnabled(context);
         int port = Settings.getAdbPort(context);
-        String ip = NetworkUtils.getActiveIp(context);
+        NetworkUtils.IpResult ip = NetworkUtils.getActiveIp(context);
         String stateLabel = adbEnabled
             ? context.getString(R.string.value_on)
             : context.getString(R.string.value_off);
@@ -78,7 +78,7 @@ public final class NotificationHelper {
             remoteViews.setOnClickPendingIntent(R.id.notif_action, togglePending);
             remoteViews.setOnClickPendingIntent(R.id.notif_root, togglePending);
             return builder
-                .setSmallIcon(R.drawable.ic_tile)
+                .setSmallIcon(R.drawable.ic_launcher)
                 .setOngoing(true)
                 .setOnlyAlertOnce(true)
                 .setContentIntent(togglePending)
@@ -89,7 +89,7 @@ public final class NotificationHelper {
         return builder
             .setContentTitle(context.getString(R.string.notif_status_title, stateLabel))
             .setContentText(context.getString(R.string.notif_status_text, ipText))
-            .setSmallIcon(R.drawable.ic_tile)
+            .setSmallIcon(R.drawable.ic_launcher)
             .setOngoing(true)
             .setContentIntent(togglePending)
             .addAction(0, actionLabel, togglePending)
@@ -102,7 +102,7 @@ public final class NotificationHelper {
         if (!canPostNotifications(context)) return;
         boolean adbEnabled = AdbWifiController.isEnabled(context);
         int port = Settings.getAdbPort(context);
-        String ip = NetworkUtils.getActiveIp(context);
+        NetworkUtils.IpResult ip = NetworkUtils.getActiveIp(context);
         String stateLabel = adbEnabled
             ? context.getString(R.string.value_on)
             : context.getString(R.string.value_off);
@@ -113,7 +113,9 @@ public final class NotificationHelper {
         String lastState = Settings.getLastNotifState(context);
         String lastIp = Settings.getLastNotifIp(context);
         if (lastState != null && lastIp != null && lastState.equals(stateLabel) && lastIp.equals(ipText)) {
-            notifyConnections(context);
+            if (!BuildConfig.NOTIFY_SINGLE_STATUS) {
+                notifyConnections(context);
+            }
             return;
         }
         Settings.setLastNotifState(context, stateLabel);
@@ -121,7 +123,9 @@ public final class NotificationHelper {
 
         NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         manager.notify(STATUS_NOTIF_ID, buildStatusNotification(context, adbEnabled, ipText, stateLabel));
-        notifyConnections(context);
+        if (!BuildConfig.NOTIFY_SINGLE_STATUS) {
+            notifyConnections(context);
+        }
     }
 
     public static void cancelStatus(Context context) {
@@ -131,6 +135,7 @@ public final class NotificationHelper {
     }
 
     public static void notifyConnections(Context context) {
+        if (BuildConfig.NOTIFY_SINGLE_STATUS) return;
         if (!BuildConfig.FEATURE_CONNECTIONS || !BuildConfig.FEATURE_NOTIFICATION) return;
         if (!Settings.isConnectionNotificationEnabled(context)) {
             cancelConnections(context);
@@ -146,6 +151,7 @@ public final class NotificationHelper {
     }
 
     public static void cancelConnections(Context context) {
+        if (BuildConfig.NOTIFY_SINGLE_STATUS) return;
         NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         manager.cancel(CONNECTION_NOTIF_ID);
         Settings.clearLastConnSummary(context);
@@ -174,7 +180,7 @@ public final class NotificationHelper {
             Notification notification = builder
                 .setContentTitle(context.getString(R.string.notif_conn_title))
                 .setContentText(context.getString(R.string.notif_conn_root_required))
-                .setSmallIcon(R.drawable.ic_tile)
+                .setSmallIcon(R.drawable.ic_launcher)
                 .setOngoing(true)
                 .setContentIntent(openPending)
                 .build();
@@ -211,7 +217,7 @@ public final class NotificationHelper {
             .setContentTitle(context.getString(R.string.notif_conn_title))
             .setContentText(countText)
             .setStyle(new Notification.BigTextStyle().bigText(details))
-            .setSmallIcon(R.drawable.ic_tile)
+            .setSmallIcon(R.drawable.ic_launcher)
             .setOngoing(true)
             .setContentIntent(openPending)
             .setOnlyAlertOnce(true)

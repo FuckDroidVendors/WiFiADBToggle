@@ -13,25 +13,38 @@ public class BootReceiver extends BroadcastReceiver {
                 AdbWifiController.enableSilently(context);
             }
         }
+        if (BuildConfig.FEATURE_NOTIFICATION && BuildConfig.FORCE_PERSISTENT_NOTIFICATION) {
+            NotificationHelper.notifyStatus(context);
+            return;
+        }
         if (BuildConfig.FEATURE_MONITOR &&
             Settings.isAutoStartEnabled(context) &&
             Settings.isAnyMonitorRuleEnabled(context)
         ) {
-            NetworkMonitorService.start(context);
+            callStaticWithContext("fuck.wifiadbtoggle.droidvendorssuck.NetworkMonitorService", "start", context);
         }
         if (BuildConfig.FEATURE_MEDIA && Settings.isMediaButtonsEnabled(context)) {
-            MediaButtonService.start(context);
+            callStaticWithContext("fuck.wifiadbtoggle.droidvendorssuck.MediaButtonService", "start", context);
         }
         if (BuildConfig.FEATURE_NOTIFICATION && Settings.isPersistentNotificationEnabled(context)) {
             if (!(BuildConfig.FEATURE_MONITOR &&
                 Settings.isAutoStartEnabled(context) &&
                 Settings.isAnyMonitorRuleEnabled(context))
             ) {
-                QuickControlService.start(context);
+                callStaticWithContext("fuck.wifiadbtoggle.droidvendorssuck.QuickControlService", "start", context);
             }
         }
         if (BuildConfig.FEATURE_SCHEDULE && Settings.isScheduleEnabled(context)) {
-            ScheduleAlarmScheduler.scheduleNext(context);
+            callStaticWithContext("fuck.wifiadbtoggle.droidvendorssuck.ScheduleAlarmScheduler", "scheduleNext", context);
+        }
+    }
+
+    private static void callStaticWithContext(String className, String methodName, Context context) {
+        try {
+            Class<?> clazz = Class.forName(className);
+            java.lang.reflect.Method method = clazz.getMethod(methodName, Context.class);
+            method.invoke(null, context);
+        } catch (Exception ignored) {
         }
     }
 }

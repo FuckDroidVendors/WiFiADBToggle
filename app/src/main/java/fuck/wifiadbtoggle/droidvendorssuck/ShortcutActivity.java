@@ -68,7 +68,7 @@ public class ShortcutActivity extends Activity {
 
     private void openSettings() {
         if (BuildConfig.FORCE_PERSISTENT_NOTIFICATION) {
-            QuickControlService.start(this);
+            NotificationHelper.notifyStatus(this);
             return;
         }
         Intent intent = new Intent().setClassName(

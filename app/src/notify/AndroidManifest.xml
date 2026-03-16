@@ -1,6 +1,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" tools:node="remove" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" tools:node="remove" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" tools:node="remove" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" tools:node="remove" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" tools:node="remove" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" tools:node="remove" />
+
     <application>
         <activity
             android:name=".MainActivity"
@@ -25,6 +32,10 @@
             android:name=".MediaButtonTestActivity"
             tools:node="remove" />
 
+        <activity
+            android:name=".ShortcutActivity"
+            tools:node="remove" />
+
         <service
             android:name=".AdbTileService"
             tools:node="remove" />
@@ -37,8 +48,20 @@
             android:name=".MediaButtonService"
             tools:node="remove" />
 
+        <service
+            android:name=".QuickControlService"
+            tools:node="remove" />
+
         <receiver
             android:name=".ScheduleAlarmReceiver"
             tools:node="remove" />
+
+        <receiver
+            android:name=".NotifyActionReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="fuck.wifiadbtoggle.droidvendorssuck.action.TOGGLE" />
+            </intent-filter>
+        </receiver>
     </application>
 </manifest>
