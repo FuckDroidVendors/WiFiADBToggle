@@ -1,5 +1,7 @@
 package fuck.wifiadbtoggle.droidvendorssuck
 
+import android.app.Activity
+import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.os.Bundle
@@ -12,14 +14,12 @@ import android.widget.RadioGroup
 import android.widget.Switch
 import android.view.View
 import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import java.text.DateFormat
 import java.util.Calendar
 
-class ScheduleActivity : AppCompatActivity() {
+class ScheduleActivity : Activity() {
     private lateinit var calendarView: CalendarView
     private lateinit var list: RecyclerView
     private lateinit var emptyView: TextView
@@ -60,8 +60,8 @@ class ScheduleActivity : AppCompatActivity() {
     }
 
     private fun loadForSelectedDay() {
-        val (start, end) = ScheduleManager.getDayBounds(selectedDayMillis)
-        val items = db.listForDay(start, end)
+        val bounds = ScheduleManager.getDayBounds(selectedDayMillis)
+        val items = db.listForDay(bounds.startMillis, bounds.endMillis)
         adapter.submit(items)
         emptyView.visibility = if (items.isEmpty()) View.VISIBLE else View.GONE
     }
@@ -135,12 +135,12 @@ class ScheduleActivity : AppCompatActivity() {
                     else -> ScheduleMode.RESPECT
                 }
                 val entry = ScheduleEntry(
-                    id = existing?.id ?: 0L,
-                    title = titleInput.text.toString().ifBlank { "Schedule" },
-                    startMillis = calStart.timeInMillis,
-                    endMillis = calEnd.timeInMillis,
-                    mode = mode,
-                    enabled = enabledSwitch.isChecked
+                    existing?.id ?: 0L,
+                    titleInput.text.toString().ifBlank { "Schedule" },
+                    calStart.timeInMillis,
+                    calEnd.timeInMillis,
+                    mode,
+                    enabledSwitch.isChecked
                 )
                 if (existing == null) {
                     db.insert(entry)

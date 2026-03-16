@@ -1,16 +1,16 @@
 package fuck.wifiadbtoggle.droidvendorssuck
 
+import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.Build
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 
-class MediaButtonTestActivity : AppCompatActivity() {
+class MediaButtonTestActivity : Activity() {
     private lateinit var eventText: TextView
     private lateinit var countText: TextView
     private var count = 0
@@ -37,12 +37,12 @@ class MediaButtonTestActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         val filter = IntentFilter(MediaButtonService.ACTION_MEDIA_BUTTON_EVENT)
-        ContextCompat.registerReceiver(
-            this,
-            receiver,
-            filter,
-            ContextCompat.RECEIVER_NOT_EXPORTED
-        )
+        if (Build.VERSION.SDK_INT >= 33) {
+            registerReceiver(receiver, filter, Context.RECEIVER_NOT_EXPORTED)
+        } else {
+            @Suppress("DEPRECATION")
+            registerReceiver(receiver, filter)
+        }
         receiverRegistered = true
     }
 

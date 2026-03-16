@@ -11,7 +11,6 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.view.KeyEvent
-import androidx.core.app.NotificationCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 
@@ -132,8 +131,14 @@ class MediaButtonService : Service() {
                 description = getString(R.string.notif_channel_desc)
             }
             manager.createNotificationChannel(channel)
+            return Notification.Builder(this, NOTIF_CHANNEL_ID)
+                .setContentTitle(getString(R.string.notif_title))
+                .setContentText(getString(R.string.notif_text))
+                .setSmallIcon(R.drawable.ic_tile)
+                .setOngoing(true)
+                .build()
         }
-        return NotificationCompat.Builder(this, NOTIF_CHANNEL_ID)
+        return Notification.Builder(this)
             .setContentTitle(getString(R.string.notif_title))
             .setContentText(getString(R.string.notif_text))
             .setSmallIcon(R.drawable.ic_tile)
