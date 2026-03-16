@@ -49,10 +49,10 @@ public class AdbTileService extends TileService {
         if (tile == null) return;
         boolean enabled = AdbWifiController.isEnabled(this);
         tile.setState(enabled ? Tile.STATE_ACTIVE : Tile.STATE_INACTIVE);
-        String ip = NetworkUtils.getActiveIp(this);
+        NetworkUtils.IpResult ip = NetworkUtils.getActiveIp(this);
         int port = Settings.getAdbPort(this);
         tile.setLabel(getString(R.string.tile_label));
-        tile.setIcon(Icon.createWithResource(this, R.drawable.ic_tile));
+        tile.setIcon(Icon.createWithResource(this, R.drawable.ic_launcher));
         if (Build.VERSION.SDK_INT >= 29) {
             tile.setSubtitle(ip != null
                 ? getString(R.string.ip_with_port, NetworkUtils.formatHostForPort(ip), port)

@@ -17,7 +17,7 @@
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:label="@string/app_name"
-        android:icon="@drawable/ic_tile"
+        android:icon="@drawable/ic_launcher"
         android:theme="@android:style/Theme.DeviceDefault.Light.NoActionBar"
         tools:targetApi="31">
 
@@ -60,7 +60,7 @@
         <service
             android:name=".AdbTileService"
             android:label="@string/tile_service_label"
-            android:icon="@drawable/ic_tile"
+            android:icon="@drawable/ic_launcher"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
             android:settingsActivity=".MainActivity"
             android:exported="true"
