@@ -1,9 +1,11 @@
 package fuck.wifiadbtoggle.droidvendorssuck
 
 import android.Manifest
+import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.wifi.WifiManager
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -17,11 +19,8 @@ import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.Switch
 import android.widget.TextView
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : Activity() {
 
     private lateinit var statusText: TextView
     private lateinit var autoStartSwitch: Switch
@@ -49,17 +48,15 @@ class MainActivity : AppCompatActivity() {
     private val monitorHandler = Handler(Looper.getMainLooper())
     private val monitorRestartRunnable = Runnable { NetworkMonitorService.start(this) }
 
-    private val requestLocationPermission =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-            if (granted) {
-                addCurrentWifi()
-            } else {
-                ToastUtils.showShort(this, getString(R.string.toast_location_permission_required))
-            }
-        }
+    private var awaitingLocationPermission = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (BuildConfig.FORCE_PERSISTENT_NOTIFICATION) {
+            QuickControlService.start(this)
+            finish()
+            return
+        }
         setContentView(R.layout.activity_main)
 
         statusText = findViewById(R.id.statusText)
@@ -131,7 +128,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
         closeApp.setOnClickListener {
-            if (android.os.Build.VERSION.SDK_INT >= 21) {
+            if (Build.VERSION.SDK_INT >= 21) {
                 finishAndRemoveTask()
             } else {
                 finish()
@@ -288,14 +285,10 @@ class MainActivity : AppCompatActivity() {
             })
 
             addCurrentWifiButton.setOnClickListener {
-                if (ContextCompat.checkSelfPermission(
-                        this,
-                        Manifest.permission.ACCESS_FINE_LOCATION
-                    ) != PackageManager.PERMISSION_GRANTED
-                ) {
-                    requestLocationPermission.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-                } else {
+                if (hasFineLocationPermission()) {
                     addCurrentWifi()
+                } else {
+                    requestFineLocationPermission()
                 }
             }
         }
@@ -464,5 +457,44 @@ class MainActivity : AppCompatActivity() {
         } else {
             window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
+    }
+
+    private fun hasFineLocationPermission(): Boolean {
+        return if (Build.VERSION.SDK_INT >= 23) {
+            checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        } else {
+            true
+        }
+    }
+
+    private fun requestFineLocationPermission() {
+        if (Build.VERSION.SDK_INT < 23) {
+            addCurrentWifi()
+            return
+        }
+        if (awaitingLocationPermission) return
+        awaitingLocationPermission = true
+        requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_LOCATION)
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode != REQUEST_LOCATION) return
+        awaitingLocationPermission = false
+        val granted = grantResults.isNotEmpty() &&
+            grantResults[0] == PackageManager.PERMISSION_GRANTED
+        if (granted) {
+            addCurrentWifi()
+        } else {
+            ToastUtils.showShort(this, getString(R.string.toast_location_permission_required))
+        }
+    }
+
+    companion object {
+        private const val REQUEST_LOCATION = 1001
     }
 }

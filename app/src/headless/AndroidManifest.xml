@@ -1,0 +1,52 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <application>
+        <activity
+            android:name=".MainActivity"
+            tools:node="remove" />
+
+        <activity
+            android:name=".ShortcutActivity"
+            tools:node="remove" />
+
+        <activity
+            android:name=".ScheduleActivity"
+            tools:node="remove" />
+
+        <activity
+            android:name=".MediaButtonTestActivity"
+            tools:node="remove" />
+
+        <activity
+            android:name=".HeadlessLauncherActivity"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:theme="@android:style/Theme.NoDisplay">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <service
+            android:name=".AdbTileService"
+            tools:node="remove" />
+
+        <service
+            android:name=".NetworkMonitorService"
+            tools:node="remove" />
+
+        <service
+            android:name=".MediaButtonService"
+            tools:node="remove" />
+
+        <service
+            android:name=".QuickControlService"
+            tools:node="remove" />
+
+        <receiver
+            android:name=".ScheduleAlarmReceiver"
+            tools:node="remove" />
+    </application>
+</manifest>
