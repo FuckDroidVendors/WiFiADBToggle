@@ -14,12 +14,45 @@ android {
         }
     }
 
+    def adbPortProp = project.findProperty("adbPort")?.toString()
+    def compileAdbPort = 5555
+    if (adbPortProp) {
+        try {
+            def value = Integer.parseInt(adbPortProp)
+            if (value > 0 && value <= 65535) {
+                compileAdbPort = value
+            }
+        } catch (Exception ignored) {
+        }
+    }
+    def autoBootEnabled = project.findProperty("autoboot")?.toString()?.toBoolean() == true
+    def resLocaleProp = project.findProperty("resLocale")?.toString()
+    def resDensitiesProp = project.findProperty("resDensities")?.toString()
+    def resConfigsList = []
+    def localeValue = (resLocaleProp == null || resLocaleProp.trim().isEmpty()) ? "en" : resLocaleProp.trim()
+    if (localeValue != "all") {
+        resConfigsList.addAll(localeValue.split(",").collect { it.trim() }.findAll { it })
+    }
+    def densitiesValue = resDensitiesProp?.trim()
+    if (!densitiesValue && (requestedMode == "notify" || requestedMode == "headless")) {
+        densitiesValue = "nodpi"
+    }
+    if (densitiesValue) {
+        resConfigsList.addAll(densitiesValue.split(",").collect { it.trim() }.findAll { it })
+    }
+
     defaultConfig {
         applicationId = "fuck.wifiadbtoggle.droidvendorssuck"
         minSdk = 17
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
+        buildConfigField "int", "COMPILE_ADB_PORT", "${compileAdbPort}"
+        buildConfigField "boolean", "AUTOBOOT_ENABLE_ADB", "${autoBootEnabled}"
+        buildConfigField "boolean", "SETTINGS_UI", "true"
+        if (!resConfigsList.isEmpty()) {
+            resConfigs(*resConfigsList)
+        }
     }
 
     buildTypes {
@@ -41,6 +74,19 @@ android {
         buildConfig true
     }
 
+    sourceSets {
+        full.java.srcDirs += "src/ui/java"
+        basic.java.srcDirs += "src/ui/java"
+        tile.java.srcDirs += "src/ui/java"
+        notifyconn.java.srcDirs += "src/ui/java"
+        full21 {
+            java.srcDirs += "src/ui/java"
+            java.srcDirs += "src/full/java"
+            java.exclude "fuck/wifiadbtoggle/droidvendorssuck/MediaButtonService.kt"
+            res.srcDirs += "src/full/res"
+        }
+    }
+
     flavorDimensions "mode"
     productFlavors {
         full {
@@ -51,12 +97,33 @@ android {
             buildConfigField "boolean", "FEATURE_MEDIA", "true"
             buildConfigField "boolean", "FEATURE_SCHEDULE", "true"
             buildConfigField "boolean", "FEATURE_MONITOR", "true"
+            buildConfigField "boolean", "FORCE_PERSISTENT_NOTIFICATION", "false"
             manifestPlaceholders = [
                 enableTile: "true",
                 enableMedia: "true",
                 enableSchedule: "true",
                 enableQuickControl: "true",
-                enableMonitor: "true"
+                enableMonitor: "true",
+                enableBootReceiver: "true"
+            ]
+        }
+        full21 {
+            dimension "mode"
+            minSdk = 21
+            buildConfigField "boolean", "FEATURE_NOTIFICATION", "true"
+            buildConfigField "boolean", "FEATURE_CONNECTIONS", "true"
+            buildConfigField "boolean", "FEATURE_TILE", "true"
+            buildConfigField "boolean", "FEATURE_MEDIA", "true"
+            buildConfigField "boolean", "FEATURE_SCHEDULE", "true"
+            buildConfigField "boolean", "FEATURE_MONITOR", "true"
+            buildConfigField "boolean", "FORCE_PERSISTENT_NOTIFICATION", "false"
+            manifestPlaceholders = [
+                enableTile: "true",
+                enableMedia: "true",
+                enableSchedule: "true",
+                enableQuickControl: "true",
+                enableMonitor: "true",
+                enableBootReceiver: "true"
             ]
         }
         notify {
@@ -67,12 +134,15 @@ android {
             buildConfigField "boolean", "FEATURE_MEDIA", "false"
             buildConfigField "boolean", "FEATURE_SCHEDULE", "false"
             buildConfigField "boolean", "FEATURE_MONITOR", "false"
+            buildConfigField "boolean", "FORCE_PERSISTENT_NOTIFICATION", "true"
+            buildConfigField "boolean", "SETTINGS_UI", "false"
             manifestPlaceholders = [
                 enableTile: "false",
                 enableMedia: "false",
                 enableSchedule: "false",
                 enableQuickControl: "true",
-                enableMonitor: "false"
+                enableMonitor: "false",
+                enableBootReceiver: "true"
             ]
         }
         notifyconn {
@@ -83,12 +153,14 @@ android {
             buildConfigField "boolean", "FEATURE_MEDIA", "false"
             buildConfigField "boolean", "FEATURE_SCHEDULE", "false"
             buildConfigField "boolean", "FEATURE_MONITOR", "false"
+            buildConfigField "boolean", "FORCE_PERSISTENT_NOTIFICATION", "false"
             manifestPlaceholders = [
                 enableTile: "false",
                 enableMedia: "false",
                 enableSchedule: "false",
                 enableQuickControl: "true",
-                enableMonitor: "false"
+                enableMonitor: "false",
+                enableBootReceiver: "true"
             ]
         }
         tile {
@@ -99,12 +171,14 @@ android {
             buildConfigField "boolean", "FEATURE_MEDIA", "false"
             buildConfigField "boolean", "FEATURE_SCHEDULE", "false"
             buildConfigField "boolean", "FEATURE_MONITOR", "false"
+            buildConfigField "boolean", "FORCE_PERSISTENT_NOTIFICATION", "false"
             manifestPlaceholders = [
                 enableTile: "true",
                 enableMedia: "false",
                 enableSchedule: "false",
                 enableQuickControl: "false",
-                enableMonitor: "false"
+                enableMonitor: "false",
+                enableBootReceiver: "true"
             ]
         }
         basic {
@@ -115,12 +189,33 @@ android {
             buildConfigField "boolean", "FEATURE_MEDIA", "false"
             buildConfigField "boolean", "FEATURE_SCHEDULE", "false"
             buildConfigField "boolean", "FEATURE_MONITOR", "true"
+            buildConfigField "boolean", "FORCE_PERSISTENT_NOTIFICATION", "false"
             manifestPlaceholders = [
                 enableTile: "true",
                 enableMedia: "false",
                 enableSchedule: "false",
                 enableQuickControl: "true",
-                enableMonitor: "true"
+                enableMonitor: "true",
+                enableBootReceiver: "true"
+            ]
+        }
+        headless {
+            dimension "mode"
+            buildConfigField "boolean", "FEATURE_NOTIFICATION", "false"
+            buildConfigField "boolean", "FEATURE_CONNECTIONS", "false"
+            buildConfigField "boolean", "FEATURE_TILE", "false"
+            buildConfigField "boolean", "FEATURE_MEDIA", "false"
+            buildConfigField "boolean", "FEATURE_SCHEDULE", "false"
+            buildConfigField "boolean", "FEATURE_MONITOR", "false"
+            buildConfigField "boolean", "FORCE_PERSISTENT_NOTIFICATION", "false"
+            buildConfigField "boolean", "SETTINGS_UI", "false"
+            manifestPlaceholders = [
+                enableTile: "false",
+                enableMedia: "false",
+                enableSchedule: "false",
+                enableQuickControl: "false",
+                enableMonitor: "false",
+                enableBootReceiver: "${autoBootEnabled}"
             ]
         }
     }
@@ -169,8 +264,13 @@ androidComponents {
 }
 
 dependencies {
-    implementation "androidx.core:core-ktx:1.12.0"
-    implementation "androidx.appcompat:appcompat:1.6.1"
+    def kotlinVersion = rootProject.ext.kotlin_version
+    fullImplementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+    full21Implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+    basicImplementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+    tileImplementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+    notifyconnImplementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
     fullImplementation "androidx.recyclerview:recyclerview:1.3.2"
     fullImplementation "androidx.media:media:1.2.1"
+    full21Implementation "androidx.recyclerview:recyclerview:1.3.2"
 }

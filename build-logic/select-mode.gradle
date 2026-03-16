@@ -16,7 +16,7 @@ if (!ext.requestedMode && deviceApiProp) {
 def isInteractive = System.console() != null
 if (!ext.requestedMode && !noPrompt && isInteractive) {
     println ""
-    println "Select build mode (full, notify, notifyconn, tile, basic). Press Enter for full:"
+    println "Select build mode (full, full21, notify, notifyconn, tile, basic, headless). Press Enter for full:"
     def input = System.console().readLine()?.trim()
     if (input) {
         ext.requestedMode = input

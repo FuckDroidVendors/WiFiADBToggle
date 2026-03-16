@@ -21,16 +21,65 @@ This requires root because it restarts `adbd` and changes system properties.
 Gradle wrapper scripts are included, but the `gradle/wrapper/gradle-wrapper.jar` file is not generated in this environment. On your machine, run `gradle wrapper` once to generate it, or let Android Studio create/update the wrapper.
 You can also run `scripts/gen-wrapper.sh` to generate the wrapper JAR if Gradle is installed.
 
+To build everything from the command line:
+```
+./gradlew build
+```
+
 ### Flavors
-Build flavors are available to reduce footprint:
-- `full`: everything.
-- `notify`: persistent notification only.
-- `notifyconn`: notification + connection list.
-- `tile`: Quick Settings tile only.
-- `basic`: tile + notification, no schedule/media.
+Build flavors are available to reduce footprint and features:
+- `full`: Quick Settings tile, persistent status notification (toggleable), connection list notification (toggleable), media buttons, schedule UI, monitoring rules.
+- `full21`: Same as `full`, but minSdk 21 and uses framework `MediaSession` (no `androidx.media`).
+- `notify`: persistent status notification only (forced on, no UI/config or settings).
+- `notifyconn`: persistent status notification (toggleable) + connection list notification (toggleable).
+- `tile`: Quick Settings tile only (no notifications, no UI/config).
+- `basic`: Quick Settings tile + persistent status notification (toggleable). No schedule, media, or connection list.
+- `headless`: No UI, no notifications, no tile. Launch once to enable WiFi ADB and exit.
 
 Select a flavor interactively or via `-Pmode=notify` (add `-PnoPrompt=true` to skip the prompt).
 If you pass `-PdeviceApi=23` and no mode is set, it defaults to `notify` (no tile on old Android).
+
+#### Recommended By Android Version
+- Android 4.2–6.x (API 17–23): `notify` (tile is not available).
+- Android 7.0+ (API 24+):
+  - `tile` if you only want QS control with no notifications.
+  - `basic` for QS tile + status notification.
+  - `full` if you need schedule/media/monitoring features.
+  - `full21` if you target API 21+ and want to avoid `androidx.media`.
+  - `headless` if you want a one-shot launcher that just enables WiFi ADB.
+
+#### Build Commands
+Release APKs:
+1. `./gradlew assembleFullRelease -Pmode=full -PnoPrompt=true`
+2. `./gradlew assembleFull21Release -Pmode=full21 -PnoPrompt=true`
+3. `./gradlew assembleNotifyRelease -Pmode=notify -PnoPrompt=true`
+4. `./gradlew assembleNotifyconnRelease -Pmode=notifyconn -PnoPrompt=true`
+5. `./gradlew assembleTileRelease -Pmode=tile -PnoPrompt=true`
+6. `./gradlew assembleBasicRelease -Pmode=basic -PnoPrompt=true`
+7. `./gradlew assembleHeadlessRelease -Pmode=headless -PnoPrompt=true`
+
+Debug APKs:
+1. `./gradlew assembleFullDebug -Pmode=full -PnoPrompt=true`
+2. `./gradlew assembleFull21Debug -Pmode=full21 -PnoPrompt=true`
+3. `./gradlew assembleNotifyDebug -Pmode=notify -PnoPrompt=true`
+4. `./gradlew assembleNotifyconnDebug -Pmode=notifyconn -PnoPrompt=true`
+5. `./gradlew assembleTileDebug -Pmode=tile -PnoPrompt=true`
+6. `./gradlew assembleBasicDebug -Pmode=basic -PnoPrompt=true`
+7. `./gradlew assembleHeadlessDebug -Pmode=headless -PnoPrompt=true`
+
+#### Compile-Time Defaults (No UI Flavors)
+For `notify` and `headless` you can set defaults at build time:
+- ADB port: `-PadbPort=5555`
+- Auto-enable on boot (headless): `-Pautoboot=true`
+- Locales (default: `en`, use `all` to disable filtering): `-PresLocale=en`
+- Densities (default for `notify`/`headless`: `nodpi`): `-PresDensities=nodpi`
+
+Examples:
+```
+./gradlew assembleHeadlessRelease -Pmode=headless -PnoPrompt=true -PadbPort=5555 -Pautoboot=true
+./gradlew assembleNotifyRelease -Pmode=notify -PnoPrompt=true -PadbPort=5555
+./gradlew assembleNotifyRelease -Pmode=notify -PnoPrompt=true -PresLocale=en -PresDensities=nodpi
+```
 
 ## Use
 1. Launch the app once.
