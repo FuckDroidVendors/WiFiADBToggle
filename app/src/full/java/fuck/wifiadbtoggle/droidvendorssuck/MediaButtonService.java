@@ -147,14 +147,14 @@ public class MediaButtonService extends Service {
             return new Notification.Builder(this, NOTIF_CHANNEL_ID)
                 .setContentTitle(getString(R.string.notif_title))
                 .setContentText(getString(R.string.notif_text))
-                .setSmallIcon(R.drawable.ic_launcher)
+                .setSmallIcon(R.mipmap.ic_launcher)
                 .setOngoing(true)
                 .build();
         }
         return new Notification.Builder(this)
             .setContentTitle(getString(R.string.notif_title))
             .setContentText(getString(R.string.notif_text))
-            .setSmallIcon(R.drawable.ic_launcher)
+            .setSmallIcon(R.mipmap.ic_launcher)
             .setOngoing(true)
             .build();
     }

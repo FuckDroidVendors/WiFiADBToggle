@@ -49,7 +49,7 @@ public final class NotificationHelper {
 
         if (Build.VERSION.SDK_INT < 26) {
             return builder
-                .setSmallIcon(R.drawable.ic_launcher)
+                .setSmallIcon(R.mipmap.ic_launcher)
                 .setOngoing(true)
                 .setOnlyAlertOnce(true)
                 .setContentTitle(context.getString(R.string.notif_status_title, stateLabel))
@@ -62,7 +62,7 @@ public final class NotificationHelper {
         return builder
             .setContentTitle(context.getString(R.string.notif_status_title, stateLabel))
             .setContentText(context.getString(R.string.notif_status_text, ipText))
-            .setSmallIcon(R.drawable.ic_launcher)
+            .setSmallIcon(R.mipmap.ic_launcher)
             .setOngoing(true)
             .setContentIntent(togglePending)
             .addAction(0, actionLabel, togglePending)

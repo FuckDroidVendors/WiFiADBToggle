@@ -52,7 +52,7 @@ public class AdbTileService extends TileService {
         NetworkUtils.IpResult ip = NetworkUtils.getActiveIp(this);
         int port = Settings.getAdbPort(this);
         tile.setLabel(getString(R.string.tile_label));
-        tile.setIcon(Icon.createWithResource(this, R.drawable.ic_launcher));
+        tile.setIcon(Icon.createWithResource(this, R.mipmap.ic_launcher));
         if (Build.VERSION.SDK_INT >= 29) {
             tile.setSubtitle(ip != null
                 ? getString(R.string.ip_with_port, NetworkUtils.formatHostForPort(ip), port)

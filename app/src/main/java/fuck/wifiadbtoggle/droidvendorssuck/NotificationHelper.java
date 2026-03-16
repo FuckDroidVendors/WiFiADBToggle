@@ -26,7 +26,7 @@ public final class NotificationHelper {
         return builder
             .setContentTitle(context.getString(R.string.notif_title))
             .setContentText(context.getString(R.string.notif_text))
-            .setSmallIcon(R.drawable.ic_launcher)
+            .setSmallIcon(R.mipmap.ic_launcher)
             .setOngoing(true)
             .build();
     }
@@ -78,7 +78,7 @@ public final class NotificationHelper {
             remoteViews.setOnClickPendingIntent(R.id.notif_action, togglePending);
             remoteViews.setOnClickPendingIntent(R.id.notif_root, togglePending);
             return builder
-                .setSmallIcon(R.drawable.ic_launcher)
+                .setSmallIcon(R.mipmap.ic_launcher)
                 .setOngoing(true)
                 .setOnlyAlertOnce(true)
                 .setContentIntent(togglePending)
@@ -89,7 +89,7 @@ public final class NotificationHelper {
         return builder
             .setContentTitle(context.getString(R.string.notif_status_title, stateLabel))
             .setContentText(context.getString(R.string.notif_status_text, ipText))
-            .setSmallIcon(R.drawable.ic_launcher)
+            .setSmallIcon(R.mipmap.ic_launcher)
             .setOngoing(true)
             .setContentIntent(togglePending)
             .addAction(0, actionLabel, togglePending)
@@ -180,7 +180,7 @@ public final class NotificationHelper {
             Notification notification = builder
                 .setContentTitle(context.getString(R.string.notif_conn_title))
                 .setContentText(context.getString(R.string.notif_conn_root_required))
-                .setSmallIcon(R.drawable.ic_launcher)
+                .setSmallIcon(R.mipmap.ic_launcher)
                 .setOngoing(true)
                 .setContentIntent(openPending)
                 .build();
@@ -217,7 +217,7 @@ public final class NotificationHelper {
             .setContentTitle(context.getString(R.string.notif_conn_title))
             .setContentText(countText)
             .setStyle(new Notification.BigTextStyle().bigText(details))
-            .setSmallIcon(R.drawable.ic_launcher)
+            .setSmallIcon(R.mipmap.ic_launcher)
             .setOngoing(true)
             .setContentIntent(openPending)
             .setOnlyAlertOnce(true)
