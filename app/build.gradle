@@ -1,6 +1,5 @@
 plugins {
     id 'com.android.application'
-    id 'org.jetbrains.kotlin.android'
 }
 
 apply from: "${rootDir}/build-logic/select-mode.gradle"
@@ -50,6 +49,7 @@ android {
         buildConfigField "int", "COMPILE_ADB_PORT", "${compileAdbPort}"
         buildConfigField "boolean", "AUTOBOOT_ENABLE_ADB", "${autoBootEnabled}"
         buildConfigField "boolean", "SETTINGS_UI", "true"
+        buildConfigField "boolean", "NOTIFY_SINGLE_STATUS", "false"
         if (!resConfigsList.isEmpty()) {
             resConfigs(*resConfigsList)
         }
@@ -79,10 +79,27 @@ android {
         basic.java.srcDirs += "src/ui/java"
         tile.java.srcDirs += "src/ui/java"
         notifyconn.java.srcDirs += "src/ui/java"
+        notify {
+            java.exclude "fuck/wifiadbtoggle/droidvendorssuck/AdbConnectionUtils.java"
+            java.exclude "fuck/wifiadbtoggle/droidvendorssuck/AdbTileService.java"
+            java.exclude "fuck/wifiadbtoggle/droidvendorssuck/BootReceiver.java"
+            java.exclude "fuck/wifiadbtoggle/droidvendorssuck/MainActivity.java"
+            java.exclude "fuck/wifiadbtoggle/droidvendorssuck/MediaButtonService.java"
+            java.exclude "fuck/wifiadbtoggle/droidvendorssuck/MediaPattern.java"
+            java.exclude "fuck/wifiadbtoggle/droidvendorssuck/NetworkMonitorService.java"
+            java.exclude "fuck/wifiadbtoggle/droidvendorssuck/NotificationHelper.java"
+            java.exclude "fuck/wifiadbtoggle/droidvendorssuck/QuickControlService.java"
+            java.exclude "fuck/wifiadbtoggle/droidvendorssuck/ScheduleAlarmReceiver.java"
+            java.exclude "fuck/wifiadbtoggle/droidvendorssuck/ScheduleAlarmScheduler.java"
+            java.exclude "fuck/wifiadbtoggle/droidvendorssuck/ScheduleDbHelper.java"
+            java.exclude "fuck/wifiadbtoggle/droidvendorssuck/ScheduleEntry.java"
+            java.exclude "fuck/wifiadbtoggle/droidvendorssuck/ScheduleManager.java"
+            java.exclude "fuck/wifiadbtoggle/droidvendorssuck/ScheduleMode.java"
+            java.exclude "fuck/wifiadbtoggle/droidvendorssuck/ShortcutActivity.java"
+        }
         full21 {
             java.srcDirs += "src/ui/java"
             java.srcDirs += "src/full/java"
-            java.exclude "fuck/wifiadbtoggle/droidvendorssuck/MediaButtonService.kt"
             res.srcDirs += "src/full/res"
         }
     }
@@ -136,6 +153,7 @@ android {
             buildConfigField "boolean", "FEATURE_MONITOR", "false"
             buildConfigField "boolean", "FORCE_PERSISTENT_NOTIFICATION", "true"
             buildConfigField "boolean", "SETTINGS_UI", "false"
+            buildConfigField "boolean", "NOTIFY_SINGLE_STATUS", "true"
             manifestPlaceholders = [
                 enableTile: "false",
                 enableMedia: "false",
@@ -233,9 +251,6 @@ android {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
-    kotlinOptions {
-        jvmTarget = '17'
-    }
 }
 
 androidComponents {
@@ -264,10 +279,8 @@ androidComponents {
 }
 
 dependencies {
-    def kotlinVersion = rootProject.ext.kotlin_version
-    fullImplementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
-    full21Implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
     fullImplementation "androidx.recyclerview:recyclerview:1.3.2"
     fullImplementation "androidx.media:media:1.2.1"
     full21Implementation "androidx.recyclerview:recyclerview:1.3.2"
+    full21Implementation "androidx.media:media:1.2.1"
 }
