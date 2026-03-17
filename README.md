@@ -84,6 +84,9 @@ Examples:
 ./gradlew assembleNotifyRelease -Pmode=notify -PnoPrompt=true -PresLocale=en -PresDensities=nodpi
 ./gradlew assembleNotifyRelease -Pmode=notify -PnoPrompt=true -Pautoboot=true -PdirectBoot=true -PlockedBoot=true
 ./gradlew assembleNotifyRelease -Pmode=notify -PnoPrompt=true -Pautoboot=true -PsystemApp=true
+./gradlew assembleNotifyRelease -Pmode=notify -PnoPrompt=true -PdeviceApi=22 -Pautoboot=true -PadbPort=5555 -PresLocale=en -PresDensities=nodpi
+./gradlew assembleTileRelease -Pmode=tile -PnoPrompt=true -PdeviceApi=35
+./gradlew assembleTileRelease -Pmode=tile -PnoPrompt=true -PdeviceApi=35 -PresLocale=en -PresDensities=nodpi
 ```
 
 #### Early Boot / System App Notes
