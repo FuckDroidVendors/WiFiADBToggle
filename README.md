@@ -73,13 +73,28 @@ For `notify` and `headless` you can set defaults at build time:
 - Auto-enable on boot (headless): `-Pautoboot=true`
 - Locales (default: `en`, use `all` to disable filtering): `-PresLocale=en`
 - Densities (default for `notify`/`headless`: `nodpi`): `-PresDensities=nodpi`
+- Direct boot aware receiver (LOCKED_BOOT_COMPLETED support): `-PdirectBoot=true`
+- Enable actions during locked boot (earliest app-level boot hook): `-PlockedBoot=true`
+- System app behavior (use SystemProperties if available): `-PsystemApp=true`
 
 Examples:
 ```
 ./gradlew assembleHeadlessRelease -Pmode=headless -PnoPrompt=true -PadbPort=5555 -Pautoboot=true
 ./gradlew assembleNotifyRelease -Pmode=notify -PnoPrompt=true -PadbPort=5555
 ./gradlew assembleNotifyRelease -Pmode=notify -PnoPrompt=true -PresLocale=en -PresDensities=nodpi
+./gradlew assembleNotifyRelease -Pmode=notify -PnoPrompt=true -Pautoboot=true -PdirectBoot=true -PlockedBoot=true
+./gradlew assembleNotifyRelease -Pmode=notify -PnoPrompt=true -Pautoboot=true -PsystemApp=true
 ```
+
+#### Early Boot / System App Notes
+- `-PdirectBoot=true` marks `BootReceiver` as direct-boot aware.
+- `-PlockedBoot=true` allows handling `LOCKED_BOOT_COMPLETED` and only runs the minimal ADB enable path (no UI/notifications/settings access). It uses the compile-time port (`-PadbPort`) or 5555 by default.
+- `-PsystemApp=true` enables a system-app code path that tries to use `android.os.SystemProperties` instead of `su`.
+
+To actually run as a system/privileged app, you still need ROM-level integration:
+- Install the APK into `/system/priv-app/` (or `/system/app/`) and sign with the platform key.
+- Grant privileged permissions if required by your ROM (e.g., `SET_PROP`) via a `privapp-permissions` XML.
+- A true system service requires AOSP/framework integration; this project remains an app.
 
 ## Use
 1. Launch the app once.

@@ -7,12 +7,23 @@ import android.content.Intent;
 public class BootReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (intent == null || !Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) return;
+        if (intent == null) return;
+        String action = intent.getAction();
+        boolean lockedBoot = Intent.ACTION_LOCKED_BOOT_COMPLETED.equals(action);
+        boolean normalBoot = Intent.ACTION_BOOT_COMPLETED.equals(action);
+        if (!lockedBoot && !normalBoot) return;
+        if (lockedBoot && !BuildConfig.LOCKED_BOOT_ENABLED) return;
+
         if (BuildConfig.AUTOBOOT_ENABLE_ADB && !BuildConfig.SETTINGS_UI) {
             if (ShellRunner.canUseRoot()) {
-                AdbWifiController.enableSilently(context);
+                if (lockedBoot) {
+                    AdbWifiController.enableSilentlyWithPort(BuildConfig.COMPILE_ADB_PORT);
+                } else {
+                    AdbWifiController.enableSilently(context);
+                }
             }
         }
+        if (lockedBoot) return;
         if (BuildConfig.FEATURE_NOTIFICATION && BuildConfig.FORCE_PERSISTENT_NOTIFICATION) {
             NotificationHelper.notifyStatus(context);
             return;

@@ -25,6 +25,12 @@ android {
         }
     }
     def autoBootEnabled = project.findProperty("autoboot")?.toString()?.toBoolean() == true
+    def directBootEnabled = project.findProperty("directBoot")?.toString()?.toBoolean() == true
+    def lockedBootEnabled = project.findProperty("lockedBoot")?.toString()?.toBoolean() == true
+    def systemAppEnabled = project.findProperty("systemApp")?.toString()?.toBoolean() == true
+    if (lockedBootEnabled) {
+        directBootEnabled = true
+    }
     def resLocaleProp = project.findProperty("resLocale")?.toString()
     def resDensitiesProp = project.findProperty("resDensities")?.toString()
     def resConfigsList = []
@@ -48,6 +54,9 @@ android {
         versionName = "1.0"
         buildConfigField "int", "COMPILE_ADB_PORT", "${compileAdbPort}"
         buildConfigField "boolean", "AUTOBOOT_ENABLE_ADB", "${autoBootEnabled}"
+        buildConfigField "boolean", "DIRECT_BOOT_AWARE", "${directBootEnabled}"
+        buildConfigField "boolean", "LOCKED_BOOT_ENABLED", "${lockedBootEnabled}"
+        buildConfigField "boolean", "SYSTEM_APP_BUILD", "${systemAppEnabled}"
         buildConfigField "boolean", "SETTINGS_UI", "true"
         buildConfigField "boolean", "NOTIFY_SINGLE_STATUS", "false"
         if (!resConfigsList.isEmpty()) {
@@ -141,7 +150,8 @@ android {
                 enableSchedule: "true",
                 enableQuickControl: "true",
                 enableMonitor: "true",
-                enableBootReceiver: "true"
+                enableBootReceiver: "true",
+                directBootAware: "${directBootEnabled}"
             ]
         }
         full21 {
@@ -160,7 +170,8 @@ android {
                 enableSchedule: "true",
                 enableQuickControl: "true",
                 enableMonitor: "true",
-                enableBootReceiver: "true"
+                enableBootReceiver: "true",
+                directBootAware: "${directBootEnabled}"
             ]
         }
         notify {
@@ -180,7 +191,8 @@ android {
                 enableSchedule: "false",
                 enableQuickControl: "true",
                 enableMonitor: "false",
-                enableBootReceiver: "true"
+                enableBootReceiver: "true",
+                directBootAware: "${directBootEnabled}"
             ]
         }
         notifyconn {
@@ -198,7 +210,8 @@ android {
                 enableSchedule: "false",
                 enableQuickControl: "true",
                 enableMonitor: "false",
-                enableBootReceiver: "true"
+                enableBootReceiver: "true",
+                directBootAware: "${directBootEnabled}"
             ]
         }
         tile {
@@ -217,7 +230,8 @@ android {
                 enableSchedule: "false",
                 enableQuickControl: "false",
                 enableMonitor: "false",
-                enableBootReceiver: "true"
+                enableBootReceiver: "true",
+                directBootAware: "${directBootEnabled}"
             ]
         }
         basic {
@@ -235,7 +249,8 @@ android {
                 enableSchedule: "false",
                 enableQuickControl: "true",
                 enableMonitor: "true",
-                enableBootReceiver: "true"
+                enableBootReceiver: "true",
+                directBootAware: "${directBootEnabled}"
             ]
         }
         headless {
@@ -254,7 +269,8 @@ android {
                 enableSchedule: "false",
                 enableQuickControl: "false",
                 enableMonitor: "false",
-                enableBootReceiver: "${autoBootEnabled}"
+                enableBootReceiver: "${autoBootEnabled}",
+                directBootAware: "${directBootEnabled}"
             ]
         }
     }
