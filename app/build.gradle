@@ -97,6 +97,24 @@ android {
             java.exclude "fuck/wifiadbtoggle/droidvendorssuck/ScheduleMode.java"
             java.exclude "fuck/wifiadbtoggle/droidvendorssuck/ShortcutActivity.java"
         }
+        tile {
+            java.exclude "fuck/wifiadbtoggle/droidvendorssuck/AdbConnectionUtils.java"
+            java.exclude "fuck/wifiadbtoggle/droidvendorssuck/BootReceiver.java"
+            java.exclude "fuck/wifiadbtoggle/droidvendorssuck/MainActivity.java"
+            java.exclude "fuck/wifiadbtoggle/droidvendorssuck/MediaButtonService.java"
+            java.exclude "fuck/wifiadbtoggle/droidvendorssuck/MediaButtonTestActivity.java"
+            java.exclude "fuck/wifiadbtoggle/droidvendorssuck/MediaPattern.java"
+            java.exclude "fuck/wifiadbtoggle/droidvendorssuck/NetworkMonitorService.java"
+            java.exclude "fuck/wifiadbtoggle/droidvendorssuck/NotificationHelper.java"
+            java.exclude "fuck/wifiadbtoggle/droidvendorssuck/QuickControlService.java"
+            java.exclude "fuck/wifiadbtoggle/droidvendorssuck/ScheduleAlarmReceiver.java"
+            java.exclude "fuck/wifiadbtoggle/droidvendorssuck/ScheduleAlarmScheduler.java"
+            java.exclude "fuck/wifiadbtoggle/droidvendorssuck/ScheduleActivity.java"
+            java.exclude "fuck/wifiadbtoggle/droidvendorssuck/ScheduleDbHelper.java"
+            java.exclude "fuck/wifiadbtoggle/droidvendorssuck/ScheduleEntry.java"
+            java.exclude "fuck/wifiadbtoggle/droidvendorssuck/ScheduleManager.java"
+            java.exclude "fuck/wifiadbtoggle/droidvendorssuck/ScheduleMode.java"
+        }
         full21 {
             java.srcDirs += "src/ui/java"
             java.srcDirs += "src/full/java"
@@ -190,6 +208,7 @@ android {
             buildConfigField "boolean", "FEATURE_SCHEDULE", "false"
             buildConfigField "boolean", "FEATURE_MONITOR", "false"
             buildConfigField "boolean", "FORCE_PERSISTENT_NOTIFICATION", "false"
+            buildConfigField "boolean", "SETTINGS_UI", "false"
             manifestPlaceholders = [
                 enableTile: "true",
                 enableMedia: "false",
