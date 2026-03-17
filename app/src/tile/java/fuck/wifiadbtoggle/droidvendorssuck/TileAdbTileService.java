@@ -1,0 +1,80 @@
+package fuck.wifiadbtoggle.droidvendorssuck;
+
+import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
+import android.app.PendingIntent;
+import android.content.Intent;
+import android.graphics.drawable.Icon;
+import android.os.Build;
+import android.service.quicksettings.Tile;
+import android.service.quicksettings.TileService;
+
+@TargetApi(24)
+public class TileAdbTileService extends TileService {
+
+    @Override
+    public void onStartListening() {
+        super.onStartListening();
+        if (!BuildConfig.FEATURE_TILE) return;
+        updateTile();
+    }
+
+    @Override
+    public void onClick() {
+        super.onClick();
+        if (!BuildConfig.FEATURE_TILE) return;
+        if (!ShellRunner.canUseRoot()) {
+            startToggleActivity();
+            return;
+        }
+        AdbWifiController.toggle(this);
+        updateTile();
+    }
+
+    private void updateTile() {
+        if (!BuildConfig.FEATURE_TILE) return;
+        Tile tile = getQsTile();
+        if (tile == null) return;
+        boolean enabled = AdbWifiController.isEnabled(this);
+        tile.setState(enabled ? Tile.STATE_ACTIVE : Tile.STATE_INACTIVE);
+        NetworkUtils.IpResult ip = NetworkUtils.getActiveIp(this);
+        int port = Settings.getAdbPort(this);
+        tile.setLabel(getString(R.string.tile_label));
+        tile.setIcon(Icon.createWithResource(this, R.mipmap.ic_launcher));
+        if (Build.VERSION.SDK_INT >= 29) {
+            tile.setSubtitle(ip != null
+                ? getString(R.string.ip_with_port, NetworkUtils.formatHostForPort(ip), port)
+                : getString(R.string.tile_subtitle_no_ip));
+        }
+        tile.updateTile();
+    }
+
+    private void startToggleActivity() {
+        Intent intent = new Intent(this, TileShortcutActivity.class)
+            .setAction(TileShortcutActivity.ACTION_TOGGLE)
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        if (Build.VERSION.SDK_INT >= 34) {
+            startActivityAndCollapse34(intent);
+        } else {
+            startActivityAndCollapseLegacy(intent);
+        }
+    }
+
+    @TargetApi(34)
+    private void startActivityAndCollapse34(Intent intent) {
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+            this,
+            0,
+            intent,
+            PendingIntent.FLAG_IMMUTABLE
+        );
+        startActivityAndCollapse(pendingIntent);
+    }
+
+    @SuppressLint("StartActivityAndCollapseDeprecated")
+    private void startActivityAndCollapseLegacy(Intent intent) {
+        @SuppressWarnings("deprecation")
+        Intent launchIntent = intent;
+        startActivityAndCollapse(launchIntent);
+    }
+}

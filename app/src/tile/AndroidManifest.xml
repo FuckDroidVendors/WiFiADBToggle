@@ -23,10 +23,35 @@
             android:name=".MediaButtonTestActivity"
             tools:node="remove" />
 
+        <activity
+            android:name=".ShortcutActivity"
+            tools:node="remove" />
+
+        <activity
+            android:name=".TileShortcutActivity"
+            android:exported="true"
+            android:theme="@android:style/Theme.NoDisplay" />
+
         <service
             android:name=".AdbTileService"
-            android:settingsActivity=".ShortcutActivity"
-            tools:replace="android:settingsActivity" />
+            tools:node="remove" />
+
+        <service
+            android:name=".TileAdbTileService"
+            android:label="@string/tile_service_label"
+            android:icon="@mipmap/ic_launcher"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
+            android:settingsActivity=".TileShortcutActivity"
+            android:exported="true"
+            android:enabled="${enableTile}"
+            tools:targetApi="24">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.service.quicksettings.ACTIVE_TILE"
+                android:value="true" />
+        </service>
 
         <service
             android:name=".NetworkMonitorService"

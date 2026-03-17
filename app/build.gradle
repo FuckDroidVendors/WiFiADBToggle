@@ -99,6 +99,7 @@ android {
         }
         tile {
             java.exclude "fuck/wifiadbtoggle/droidvendorssuck/AdbConnectionUtils.java"
+            java.exclude "fuck/wifiadbtoggle/droidvendorssuck/AdbTileService.java"
             java.exclude "fuck/wifiadbtoggle/droidvendorssuck/BootReceiver.java"
             java.exclude "fuck/wifiadbtoggle/droidvendorssuck/MainActivity.java"
             java.exclude "fuck/wifiadbtoggle/droidvendorssuck/MediaButtonService.java"
@@ -114,6 +115,7 @@ android {
             java.exclude "fuck/wifiadbtoggle/droidvendorssuck/ScheduleEntry.java"
             java.exclude "fuck/wifiadbtoggle/droidvendorssuck/ScheduleManager.java"
             java.exclude "fuck/wifiadbtoggle/droidvendorssuck/ScheduleMode.java"
+            java.exclude "fuck/wifiadbtoggle/droidvendorssuck/ShortcutActivity.java"
         }
         full21 {
             java.srcDirs += "src/ui/java"
