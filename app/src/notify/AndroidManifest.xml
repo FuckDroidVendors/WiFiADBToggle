@@ -32,10 +32,6 @@
             android:name=".MediaButtonTestActivity"
             tools:node="remove" />
 
-        <activity
-            android:name=".ShortcutActivity"
-            tools:node="remove" />
-
         <service
             android:name=".AdbTileService"
             tools:node="remove" />

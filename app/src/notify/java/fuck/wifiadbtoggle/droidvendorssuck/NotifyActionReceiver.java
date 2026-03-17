@@ -14,20 +14,13 @@ public class NotifyActionReceiver extends BroadcastReceiver {
             NotificationHelper.notifyStatus(context);
             return;
         }
-        performToggle(context);
+        launchToggleActivity(context);
     }
 
-    private void performToggle(Context context) {
-        if (!ShellRunner.canUseRoot()) {
-            ShellRunner.requestRoot(context);
-            if (!ShellRunner.canUseRoot()) {
-                ToastUtils.showShort(context, context.getString(R.string.toast_action_requires_root));
-                return;
-            }
-        }
-        AdbWifiController.toggle(context);
-        NotificationHelper.notifyStatus(context);
+    private void launchToggleActivity(Context context) {
+        Intent toggleIntent = new Intent(context, ShortcutActivity.class)
+            .setAction(ShortcutActivity.ACTION_TOGGLE)
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(toggleIntent);
     }
-
-    
 }

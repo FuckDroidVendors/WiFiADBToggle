@@ -37,10 +37,13 @@ public final class NotificationHelper {
         String stateLabel
     ) {
         Notification.Builder builder = notificationBuilder(context);
-        String actionLabel = context.getString(R.string.action_toggle);
-        Intent toggleIntent = new Intent(context, NotifyActionReceiver.class)
-            .setAction(NotifyActionReceiver.ACTION_TOGGLE);
-        PendingIntent togglePending = PendingIntent.getBroadcast(
+        String actionLabel = adbEnabled
+            ? context.getString(R.string.action_turn_off)
+            : context.getString(R.string.action_turn_on);
+        Intent toggleIntent = new Intent(context, ShortcutActivity.class).setAction(
+            adbEnabled ? ShortcutActivity.ACTION_DISABLE : ShortcutActivity.ACTION_ENABLE
+        );
+        PendingIntent togglePending = PendingIntent.getActivity(
             context,
             1,
             toggleIntent,
