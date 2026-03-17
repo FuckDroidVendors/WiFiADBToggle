@@ -53,6 +53,21 @@
             tools:node="remove" />
 
         <receiver
+            android:name=".BootReceiver"
+            tools:node="remove" />
+
+        <receiver
+            android:name=".NotifyBootReceiver"
+            android:exported="false"
+            android:directBootAware="${directBootAware}"
+            android:enabled="${enableBootReceiver}">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
             android:name=".NotifyActionReceiver"
             android:exported="true">
             <intent-filter>
