@@ -311,6 +311,7 @@ androidComponents {
             }
         }
         tasks.named("build").configure { finalizedBy(printTask) }
+        tasks.named("assemble${capitalized}").configure { finalizedBy(printTask) }
     }
 }
 
