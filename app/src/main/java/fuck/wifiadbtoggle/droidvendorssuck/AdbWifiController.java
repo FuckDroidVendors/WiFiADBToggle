@@ -13,7 +13,13 @@ public final class AdbWifiController {
         if (!result.success) return false;
         String value = result.output.trim();
         if (value.isEmpty()) return false;
-        return !"0".equals(value) && !"-1".equals(value);
+        if ("0".equals(value) || "-1".equals(value)) return false;
+
+        Boolean adbdRunning = isAdbdRunning(context);
+        if (adbdRunning == null) {
+            return true;
+        }
+        return adbdRunning;
     }
 
     public static void toggle(Context context) {
@@ -68,6 +74,14 @@ public final class AdbWifiController {
         }
         if (port <= 0) return null;
         return port;
+    }
+
+    private static Boolean isAdbdRunning(Context context) {
+        ShellRunner.Result result = ShellRunner.runPrivileged(context, "getprop init.svc.adbd");
+        if (!result.success) return null;
+        String value = result.output.trim();
+        if (value.isEmpty()) return null;
+        return "running".equals(value) || "restarting".equals(value);
     }
 
     public static void applyPort(Context context, int port) {
