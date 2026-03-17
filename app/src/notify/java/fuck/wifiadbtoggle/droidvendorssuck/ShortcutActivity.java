@@ -30,23 +30,23 @@ public class ShortcutActivity extends Activity {
     private void performToggle() {
         if (!ensureRoot()) return;
         AdbWifiController.toggle(this);
-        NotificationHelper.notifyStatus(this);
+        NotifyNotificationHelper.notifyStatus(this);
     }
 
     private void performEnable() {
         if (!ensureRoot()) return;
         AdbWifiController.enable(this);
-        NotificationHelper.notifyStatus(this);
+        NotifyNotificationHelper.notifyStatus(this);
     }
 
     private void performDisable() {
         if (!ensureRoot()) return;
         AdbWifiController.disable(this);
-        NotificationHelper.notifyStatus(this);
+        NotifyNotificationHelper.notifyStatus(this);
     }
 
     private void openSettings() {
-        NotificationHelper.notifyStatus(this);
+        NotifyNotificationHelper.notifyStatus(this);
     }
 
     private boolean ensureRoot() {

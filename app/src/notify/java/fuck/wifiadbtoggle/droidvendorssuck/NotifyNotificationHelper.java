@@ -9,13 +9,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.util.Log;
 
-public final class NotificationHelper {
-    private NotificationHelper() {
+public final class NotifyNotificationHelper {
+    private NotifyNotificationHelper() {
     }
 
     public static final int STATUS_NOTIF_ID = 1001;
     private static final String NOTIF_CHANNEL_ID = "adb_status";
+    private static final String TAG = "NotifyHelper";
+    private static final boolean LOG_ENABLED = BuildConfig.AUTOBOOT_ENABLE_ADB;
 
     public static Notification buildStatusNotification(Context context) {
         boolean adbEnabled = AdbWifiController.isEnabled(context);
@@ -73,8 +76,17 @@ public final class NotificationHelper {
     }
 
     public static void notifyStatus(Context context) {
+        notifyStatus(context, false);
+    }
+
+    public static void notifyStatus(Context context, boolean force) {
         if (!BuildConfig.FEATURE_NOTIFICATION) return;
-        if (!canPostNotifications(context)) return;
+        if (!canPostNotifications(context)) {
+            if (LOG_ENABLED) {
+                Log.w(TAG, "notifyStatus blocked: notifications not allowed");
+            }
+            return;
+        }
         boolean adbEnabled = AdbWifiController.isEnabled(context);
         int port = Settings.getAdbPort(context);
         NetworkUtils.IpResult ip = NetworkUtils.getActiveIp(context);
@@ -87,14 +99,22 @@ public final class NotificationHelper {
 
         String lastState = Settings.getLastNotifState(context);
         String lastIp = Settings.getLastNotifIp(context);
-        if (lastState != null && lastIp != null && lastState.equals(stateLabel) && lastIp.equals(ipText)) {
-            return;
+        if (!force) {
+            if (lastState != null && lastIp != null && lastState.equals(stateLabel) && lastIp.equals(ipText)) {
+                if (LOG_ENABLED) {
+                    Log.d(TAG, "notifyStatus skipped: unchanged");
+                }
+                return;
+            }
         }
         Settings.setLastNotifState(context, stateLabel);
         Settings.setLastNotifIp(context, ipText);
 
         NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         manager.notify(STATUS_NOTIF_ID, buildStatusNotification(context, adbEnabled, ipText, stateLabel));
+        if (LOG_ENABLED) {
+            Log.d(TAG, "notifyStatus posted: state=" + stateLabel + " ip=" + ipText + " force=" + force);
+        }
     }
 
     public static void cancelStatus(Context context) {

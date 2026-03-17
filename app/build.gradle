@@ -96,7 +96,6 @@ android {
             java.exclude "fuck/wifiadbtoggle/droidvendorssuck/MediaButtonService.java"
             java.exclude "fuck/wifiadbtoggle/droidvendorssuck/MediaPattern.java"
             java.exclude "fuck/wifiadbtoggle/droidvendorssuck/NetworkMonitorService.java"
-            java.exclude "fuck/wifiadbtoggle/droidvendorssuck/NotificationHelper.java"
             java.exclude "fuck/wifiadbtoggle/droidvendorssuck/QuickControlService.java"
             java.exclude "fuck/wifiadbtoggle/droidvendorssuck/ScheduleAlarmReceiver.java"
             java.exclude "fuck/wifiadbtoggle/droidvendorssuck/ScheduleAlarmScheduler.java"

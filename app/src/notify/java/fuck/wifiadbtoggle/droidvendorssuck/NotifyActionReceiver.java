@@ -11,7 +11,7 @@ public class NotifyActionReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         String action = intent != null ? intent.getAction() : null;
         if (!ACTION_TOGGLE.equals(action)) {
-            NotificationHelper.notifyStatus(context);
+            NotifyNotificationHelper.notifyStatus(context);
             return;
         }
         launchToggleActivity(context);

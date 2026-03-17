@@ -8,7 +8,8 @@ public class NotifyLauncherActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        NotificationHelper.notifyStatus(this);
+        Settings.clearLastNotif(this);
+        NotifyNotificationHelper.notifyStatus(this, true);
         if (Build.VERSION.SDK_INT >= 21) {
             finishAndRemoveTask();
         } else {
