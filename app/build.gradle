@@ -301,17 +301,29 @@ androidComponents {
         def printTask = tasks.register("print${capitalized}ApkPath") {
             dependsOn("assemble${capitalized}")
             doLast {
-                def apkDir = file("$buildDir/outputs/apk/$variantName")
-                def apks = apkDir.exists() ? apkDir.listFiles().findAll { it.name.endsWith(".apk") } : []
-                if (apks && !apks.isEmpty()) {
-                    apks.each { println("APK[${variantName}]: ${it.absolutePath}") }
-                } else {
-                    println("APK[${variantName}]: not found (expected in ${apkDir})")
+                def candidateDirs = []
+                if (variant.flavorName && variant.buildType) {
+                    candidateDirs.add(file("$buildDir/outputs/apk/${variant.flavorName}/${variant.buildType}"))
+                }
+                candidateDirs.add(file("$buildDir/outputs/apk/$variantName"))
+                candidateDirs.add(file("$buildDir/outputs/apk"))
+                def found = false
+                for (dir in candidateDirs) {
+                    def apks = dir.exists() ? dir.listFiles().findAll { it.name.endsWith(".apk") } : []
+                    if (apks && !apks.isEmpty()) {
+                        apks.each { println("APK[${variantName}]: ${it.absolutePath}") }
+                        found = true
+                        break
+                    }
+                }
+                if (!found) {
+                    println("APK[${variantName}]: not found (searched ${candidateDirs.join(', ')})")
                 }
             }
         }
         tasks.named("build").configure { finalizedBy(printTask) }
-        tasks.named("assemble${capitalized}").configure { finalizedBy(printTask) }
+        def assembleTaskName = "assemble${capitalized}"
+        tasks.matching { it.name == assembleTaskName }.configureEach { finalizedBy(printTask) }
     }
 }
 
