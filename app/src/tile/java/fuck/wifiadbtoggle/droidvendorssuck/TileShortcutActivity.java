@@ -1,8 +1,8 @@
 package fuck.wifiadbtoggle.droidvendorssuck;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
+import android.content.Intent;
 
 public class TileShortcutActivity extends Activity {
     public static final String ACTION_TOGGLE = "fuck.wifiadbtoggle.droidvendorssuck.action.TOGGLE";
@@ -43,7 +43,10 @@ public class TileShortcutActivity extends Activity {
     }
 
     private void openSettings() {
-        // No settings UI in this flavor.
+        if (!ShellRunner.canUseRoot()) {
+            ShellRunner.requestRoot(this);
+        }
+        ToastUtils.showShort(this, getString(R.string.toast_add_tile_hint));
     }
 
     private boolean ensureRoot() {

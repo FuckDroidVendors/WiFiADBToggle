@@ -57,6 +57,7 @@
     <string name="toast_media_listener_started">Media listener started</string>
     <string name="toast_media_listener_stopped">Media listener stopped</string>
     <string name="toast_action_requires_root">Root required for ADB toggle</string>
+    <string name="toast_add_tile_hint">Add the WiFi ADB tile from Quick Settings</string>
     <string name="media_test_title">Media button test</string>
     <string name="media_test_hint">Press media buttons now</string>
     <string name="media_test_event">Last event: %1$s</string>

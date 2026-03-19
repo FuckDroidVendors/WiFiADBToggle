@@ -30,7 +30,13 @@
         <activity
             android:name=".TileShortcutActivity"
             android:exported="true"
-            android:theme="@android:style/Theme.NoDisplay" />
+            android:excludeFromRecents="true"
+            android:theme="@android:style/Theme.NoDisplay">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
         <service
             android:name=".AdbTileService"
